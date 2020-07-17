@@ -1,11 +1,11 @@
-package com.example.criminalintent;
+package com.example.criminalintent.controller;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
-import android.util.Log;
+
+import com.example.criminalintent.R;
 
 public class CrimeDetailActivity extends AppCompatActivity {
 
@@ -16,11 +16,6 @@ public class CrimeDetailActivity extends AppCompatActivity {
         //3. create all view of fragments: onCreateView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crime_detail);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
 
         //1. find fragment manager of this acitvity
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -30,10 +25,5 @@ public class CrimeDetailActivity extends AppCompatActivity {
                 .beginTransaction()
                 .add(R.id.fragment_container, new CrimeDetailFragment())
                 .commit();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 }
