@@ -1,4 +1,4 @@
-package com.example.criminalintent.controller;
+package com.example.criminalintent.controller.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -23,6 +23,7 @@ import com.example.criminalintent.model.Crime;
 public class CrimeDetailFragment extends Fragment {
 
     public static final String TAG = "CDF";
+    public static final String ARG_BUNDLE_CRIME = "crime";
     private EditText mEditTextCrimeTitle;
     private Button mButtonDate;
     private CheckBox mCheckBoxSolved;
@@ -40,7 +41,10 @@ public class CrimeDetailFragment extends Fragment {
 
         //Creating dummy object just for testing this page
         //later: this object must be transfered from list page.
-        mCrime = new Crime("Murdor", true);
+        if (savedInstanceState == null)
+            mCrime = new Crime("Murdor", true);
+        else
+            mCrime = (Crime) savedInstanceState.getSerializable(ARG_BUNDLE_CRIME);
     }
 
     @Override
@@ -56,6 +60,13 @@ public class CrimeDetailFragment extends Fragment {
         setListeners();
 
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable(ARG_BUNDLE_CRIME, mCrime);
     }
 
     private void findViews(View view) {

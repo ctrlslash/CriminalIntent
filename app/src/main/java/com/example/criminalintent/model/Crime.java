@@ -1,9 +1,10 @@
 package com.example.criminalintent.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-public class Crime {
+public class Crime implements Serializable {
 
     private UUID mId;
     private String mTitle;
