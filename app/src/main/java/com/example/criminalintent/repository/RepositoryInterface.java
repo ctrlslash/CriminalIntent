@@ -1,7 +1,5 @@
 package com.example.criminalintent.repository;
 
-import com.example.criminalintent.model.Crime;
-
 import java.util.List;
 import java.util.UUID;
 

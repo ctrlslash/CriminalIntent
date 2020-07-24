@@ -2,7 +2,6 @@ package com.example.criminalintent.controller.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
@@ -12,7 +11,7 @@ import java.util.UUID;
 
 public class CrimeDetailActivity extends SingleFragmentActivity {
 
-    public static final String EXTRA_CRIME_ID = "com.example.criminalintent.CrimeId";
+    private static final String EXTRA_CRIME_ID = "com.example.criminalintent.CrimeId";
 
     /**
      * Every component that want to start this activity

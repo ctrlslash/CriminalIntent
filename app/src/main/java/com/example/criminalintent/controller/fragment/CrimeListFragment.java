@@ -5,7 +5,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.criminalintent.R;
 import com.example.criminalintent.controller.activity.CrimeDetailActivity;
@@ -30,15 +28,16 @@ public class CrimeListFragment extends Fragment {
     public static final String TAG = "CLF";
     private RecyclerView mRecyclerView;
     private RepositoryInterface<Crime> mRepository;
+    private CrimeAdapter mAdapter;
 
     public CrimeListFragment() {
         // Required empty public constructor
     }
 
     public static CrimeListFragment newInstance() {
-        
+
         Bundle args = new Bundle();
-        
+
         CrimeListFragment fragment = new CrimeListFragment();
         fragment.setArguments(args);
         return fragment;
@@ -61,19 +60,32 @@ public class CrimeListFragment extends Fragment {
 
         //recyclerview responsibility: positioning
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        initUI();
+        updateUI();
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        //performance issues
+        updateUI();
     }
 
     private void findViews(View view) {
         mRecyclerView = view.findViewById(R.id.recycler_view_crimes);
     }
 
-    private void initUI() {
+    private void updateUI() {
         List<Crime> crimes = mRepository.getList();
-        CrimeAdapter adapter = new CrimeAdapter(crimes);
-        mRecyclerView.setAdapter(adapter);
+
+        if (mAdapter == null) {
+            mAdapter = new CrimeAdapter(crimes);
+            mRecyclerView.setAdapter(mAdapter);
+        } else {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     //view holder responsibility: hold reference to row views.

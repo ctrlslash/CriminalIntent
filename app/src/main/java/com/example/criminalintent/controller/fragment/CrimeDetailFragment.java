@@ -1,6 +1,5 @@
 package com.example.criminalintent.controller.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,11 +13,9 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.criminalintent.R;
-import com.example.criminalintent.controller.activity.CrimeDetailActivity;
 import com.example.criminalintent.model.Crime;
 import com.example.criminalintent.repository.CrimeRepository;
 import com.example.criminalintent.repository.RepositoryInterface;
@@ -28,7 +25,7 @@ import java.util.UUID;
 public class CrimeDetailFragment extends Fragment {
 
     public static final String TAG = "CDF";
-    public static final String ARG_BUNDLE_CRIME = "crime";
+    public static final String BUNDLE_CRIME = "crime";
     public static final String ARG_CRIME_ID = "CrimeId";
 
     private Crime mCrime;
@@ -68,9 +65,9 @@ public class CrimeDetailFragment extends Fragment {
         mRepository = CrimeRepository.getInstance();
 
         //This is very very wrong: this is memory of hosted activity
-//        UUID crimeId = (UUID) getActivity().getIntent().getSerializableExtra(CrimeDetailActivity.EXTRA_CRIME_ID);
+        //UUID crimeId = (UUID) getActivity().getIntent().getSerializableExtra(CrimeDetailActivity.EXTRA_CRIME_ID);
 
-        UUID crimeId = (UUID) getArguments().getSerializable("CrimeId");
+        UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = mRepository.get(crimeId);
     }
 
@@ -93,7 +90,14 @@ public class CrimeDetailFragment extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable(ARG_BUNDLE_CRIME, mCrime);
+        outState.putSerializable(BUNDLE_CRIME, mCrime);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        updateCrime();
     }
 
     private void findViews(View view) {
@@ -134,5 +138,9 @@ public class CrimeDetailFragment extends Fragment {
                 Log.d(TAG, mCrime.toString());
             }
         });
+    }
+
+    private void updateCrime() {
+        mRepository.update(mCrime);
     }
 }
