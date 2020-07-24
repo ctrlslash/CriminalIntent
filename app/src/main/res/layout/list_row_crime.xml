@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/imgview_solved"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="8dp"
+        app:srcCompat="@drawable/ic_solved" />
 
     <TextView
         android:id="@+id/list_row_crime_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/imgview_solved"
         android:textSize="18sp"
         tools:text="Crime Title" />
 
@@ -17,6 +27,9 @@
         android:id="@+id/list_row_crime_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/list_row_crime_title"
+        android:layout_marginTop="8dp"
+        android:layout_toLeftOf="@id/imgview_solved"
         android:textSize="18sp"
         tools:text="Crime Date" />
-</LinearLayout>
+</RelativeLayout>

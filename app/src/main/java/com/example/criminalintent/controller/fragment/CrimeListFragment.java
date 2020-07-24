@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.criminalintent.R;
@@ -47,8 +48,7 @@ public class CrimeListFragment extends Fragment {
         findViews(view);
 
         //recyclerview responsibility: positioning
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         initUI();
 
         return view;
@@ -69,17 +69,21 @@ public class CrimeListFragment extends Fragment {
 
         private TextView mTextViewTitle;
         private TextView mTextViewDate;
+        private ImageView mImageViewSolved;
 
         public CrimeHolder(@NonNull View itemView) {
             super(itemView);
 
             mTextViewTitle = itemView.findViewById(R.id.list_row_crime_title);
             mTextViewDate = itemView.findViewById(R.id.list_row_crime_date);
+            mImageViewSolved = itemView.findViewById(R.id.imgview_solved);
         }
 
         public void bindCrime(Crime crime) {
             mTextViewTitle.setText(crime.getTitle());
             mTextViewDate.setText(crime.getDate().toString());
+
+            mImageViewSolved.setVisibility(crime.isSolved() ? View.VISIBLE : View.INVISIBLE);
         }
     }
 
