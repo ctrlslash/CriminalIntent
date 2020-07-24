@@ -6,27 +6,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class CrimeRepository implements RepositoryInterface {
+public class CrimeRepository implements RepositoryInterface<Crime> {
 
     private static CrimeRepository sCrimeRepository;
     private static final int NUMBER_OF_CRIMES = 100;
+
+    private List<Crime> mCrimes;
 
     public static CrimeRepository getInstance() {
         if (sCrimeRepository == null)
             sCrimeRepository = new CrimeRepository();
 
         return sCrimeRepository;
-    }
-
-    private List<Crime> mCrimes;
-
-    //Read all
-    public List<Crime> getCrimes() {
-        return mCrimes;
-    }
-
-    public void setCrimes(List<Crime> crimes) {
-        mCrimes = crimes;
     }
 
     private CrimeRepository() {
@@ -40,8 +31,20 @@ public class CrimeRepository implements RepositoryInterface {
         }
     }
 
+    //Read all
+    @Override
+    public List<Crime> getList() {
+        return mCrimes;
+    }
+
+    @Override
+    public void setList(List<Crime> crimes) {
+        mCrimes = crimes;
+    }
+
     //Read one
-    public Crime getCrime(UUID uuid) {
+    @Override
+    public Crime get(UUID uuid) {
         for (Crime crime: mCrimes) {
             if (crime.getId().equals(uuid))
                 return crime;
@@ -51,15 +54,17 @@ public class CrimeRepository implements RepositoryInterface {
     }
 
     //Update one
-    public void updateCrime(Crime crime) {
-        Crime updateCrime = getCrime(crime.getId());
+    @Override
+    public void update(Crime crime) {
+        Crime updateCrime = get(crime.getId());
         updateCrime.setTitle(crime.getTitle());
         updateCrime.setDate(crime.getDate());
         updateCrime.setSolved(crime.isSolved());
     }
 
     //Delete
-    public void deleteCrime(Crime crime) {
+    @Override
+    public void delete(Crime crime) {
         for (int i = 0; i < mCrimes.size(); i++) {
             if (mCrimes.get(i).getId().equals(crime.getId())) {
                 mCrimes.remove(i);
@@ -70,13 +75,13 @@ public class CrimeRepository implements RepositoryInterface {
 
     //Create: Insert
     @Override
-    public void insertCrime(Crime crime) {
+    public void insert(Crime crime) {
         mCrimes.add(crime);
     }
 
     //Create: Insert
     @Override
-    public void insertCrimes(List<Crime> crimes) {
+    public void insertList(List<Crime> crimes) {
         mCrimes.addAll(crimes);
     }
 }

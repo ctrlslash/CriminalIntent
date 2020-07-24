@@ -29,7 +29,7 @@ public class CrimeListFragment extends Fragment {
 
     public static final String TAG = "CLF";
     private RecyclerView mRecyclerView;
-    private RepositoryInterface mRepository;
+    private RepositoryInterface<Crime> mRepository;
 
     public CrimeListFragment() {
         // Required empty public constructor
@@ -62,7 +62,7 @@ public class CrimeListFragment extends Fragment {
     }
 
     private void initUI() {
-        List<Crime> crimes = mRepository.getCrimes();
+        List<Crime> crimes = mRepository.getList();
         CrimeAdapter adapter = new CrimeAdapter(crimes);
         mRecyclerView.setAdapter(adapter);
     }

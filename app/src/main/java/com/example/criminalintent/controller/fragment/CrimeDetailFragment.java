@@ -18,17 +18,25 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.criminalintent.R;
+import com.example.criminalintent.controller.activity.CrimeDetailActivity;
 import com.example.criminalintent.model.Crime;
+import com.example.criminalintent.repository.CrimeRepository;
+import com.example.criminalintent.repository.RepositoryInterface;
+
+import java.util.UUID;
 
 public class CrimeDetailFragment extends Fragment {
 
     public static final String TAG = "CDF";
     public static final String ARG_BUNDLE_CRIME = "crime";
+
+    private Crime mCrime;
+    private RepositoryInterface<Crime> mRepository;
+
     private EditText mEditTextCrimeTitle;
     private Button mButtonDate;
     private CheckBox mCheckBoxSolved;
 
-    private Crime mCrime;
 
     public CrimeDetailFragment() {
         //empty public constructor
@@ -39,12 +47,9 @@ public class CrimeDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
 
-        //Creating dummy object just for testing this page
-        //later: this object must be transfered from list page.
-        if (savedInstanceState == null)
-            mCrime = new Crime("Murdor", true);
-        else
-            mCrime = (Crime) savedInstanceState.getSerializable(ARG_BUNDLE_CRIME);
+        mRepository = CrimeRepository.getInstance();
+        UUID crimeId = (UUID) getActivity().getIntent().getSerializableExtra(CrimeDetailActivity.EXTRA_CRIME_ID);
+        mCrime = mRepository.get(crimeId);
     }
 
     @Override
