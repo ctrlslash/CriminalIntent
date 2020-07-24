@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.criminalintent.R;
 import com.example.criminalintent.model.Crime;
@@ -67,6 +68,7 @@ public class CrimeListFragment extends Fragment {
     //view holder responsibility: hold reference to row views.
     private class CrimeHolder extends RecyclerView.ViewHolder {
 
+        private Crime mCrime;
         private TextView mTextViewTitle;
         private TextView mTextViewDate;
         private ImageView mImageViewSolved;
@@ -77,9 +79,17 @@ public class CrimeListFragment extends Fragment {
             mTextViewTitle = itemView.findViewById(R.id.list_row_crime_title);
             mTextViewDate = itemView.findViewById(R.id.list_row_crime_date);
             mImageViewSolved = itemView.findViewById(R.id.imgview_solved);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(getActivity(), "crime " + mCrime.getTitle() + " is clicked", Toast.LENGTH_LONG).show();
+                }
+            });
         }
 
         public void bindCrime(Crime crime) {
+            mCrime = crime;
             mTextViewTitle.setText(crime.getTitle());
             mTextViewDate.setText(crime.getDate().toString());
 
