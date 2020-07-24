@@ -29,7 +29,6 @@ public class CrimeRepository implements RepositoryInterface {
         mCrimes = crimes;
     }
 
-    //Create
     private CrimeRepository() {
         mCrimes = new ArrayList<>();
         for (int i = 0; i < NUMBER_OF_CRIMES; i++) {
@@ -67,5 +66,17 @@ public class CrimeRepository implements RepositoryInterface {
                 return;
             }
         }
+    }
+
+    //Create: Insert
+    @Override
+    public void insertCrime(Crime crime) {
+        mCrimes.add(crime);
+    }
+
+    //Create: Insert
+    @Override
+    public void insertCrimes(List<Crime> crimes) {
+        mCrimes.addAll(crimes);
     }
 }

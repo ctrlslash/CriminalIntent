@@ -10,4 +10,6 @@ public interface RepositoryInterface {
     Crime getCrime(UUID uuid);
     void updateCrime(Crime crime);
     void deleteCrime(Crime crime);
+    void insertCrime(Crime crime);
+    void insertCrimes(List<Crime> crimes);
 }

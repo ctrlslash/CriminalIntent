@@ -1,5 +1,6 @@
 package com.example.criminalintent.controller.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.criminalintent.R;
+import com.example.criminalintent.controller.activity.CrimeDetailActivity;
 import com.example.criminalintent.model.Crime;
 import com.example.criminalintent.repository.CrimeRepository;
 import com.example.criminalintent.repository.RepositoryInterface;
@@ -83,7 +85,8 @@ public class CrimeListFragment extends Fragment {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(getActivity(), "crime " + mCrime.getTitle() + " is clicked", Toast.LENGTH_LONG).show();
+                    Intent intent = CrimeDetailActivity.newIntent(getActivity(), mCrime.getId());
+                    startActivity(intent);
                 }
             });
         }
