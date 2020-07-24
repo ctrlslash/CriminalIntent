@@ -29,6 +29,7 @@ public class CrimeDetailFragment extends Fragment {
 
     public static final String TAG = "CDF";
     public static final String ARG_BUNDLE_CRIME = "crime";
+    public static final String ARG_CRIME_ID = "CrimeId";
 
     private Crime mCrime;
     private RepositoryInterface<Crime> mRepository;
@@ -42,13 +43,34 @@ public class CrimeDetailFragment extends Fragment {
         //empty public constructor
     }
 
+    /**
+     * Using factory pattern to create this fragment. every class that want
+     * to create this fragment should always call this method "only".
+     * no class should call constructor any more.
+     * @param crimeId this fragment need crime id to work properly.
+     * @return new CrimeDetailFragment
+     */
+    public static CrimeDetailFragment newInstance(UUID crimeId) {
+
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_CRIME_ID, crimeId);
+
+        CrimeDetailFragment fragment = new CrimeDetailFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
 
         mRepository = CrimeRepository.getInstance();
-        UUID crimeId = (UUID) getActivity().getIntent().getSerializableExtra(CrimeDetailActivity.EXTRA_CRIME_ID);
+
+        //This is very very wrong: this is memory of hosted activity
+//        UUID crimeId = (UUID) getActivity().getIntent().getSerializableExtra(CrimeDetailActivity.EXTRA_CRIME_ID);
+
+        UUID crimeId = (UUID) getArguments().getSerializable("CrimeId");
         mCrime = mRepository.get(crimeId);
     }
 

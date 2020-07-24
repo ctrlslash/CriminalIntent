@@ -2,6 +2,7 @@ package com.example.criminalintent.controller.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
@@ -28,6 +29,7 @@ public class CrimeDetailActivity extends SingleFragmentActivity {
 
     @Override
     public Fragment createFragment() {
-        return new CrimeDetailFragment();
+        UUID crimeId = (UUID) getIntent().getSerializableExtra(EXTRA_CRIME_ID);
+        return CrimeDetailFragment.newInstance(crimeId);
     }
 }
