@@ -18,7 +18,7 @@ import androidx.fragment.app.Fragment;
 import com.example.criminalintent.R;
 import com.example.criminalintent.model.Crime;
 import com.example.criminalintent.repository.CrimeRepository;
-import com.example.criminalintent.repository.RepositoryInterface;
+import com.example.criminalintent.repository.IRepository;
 
 import java.util.UUID;
 
@@ -29,7 +29,7 @@ public class CrimeDetailFragment extends Fragment {
     public static final String ARG_CRIME_ID = "CrimeId";
 
     private Crime mCrime;
-    private RepositoryInterface<Crime> mRepository;
+    private IRepository<Crime> mRepository;
 
     private EditText mEditTextCrimeTitle;
     private Button mButtonDate;

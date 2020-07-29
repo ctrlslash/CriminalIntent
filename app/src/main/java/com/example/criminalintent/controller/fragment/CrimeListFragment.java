@@ -17,9 +17,10 @@ import android.widget.TextView;
 
 import com.example.criminalintent.R;
 import com.example.criminalintent.controller.activity.CrimeDetailActivity;
+import com.example.criminalintent.controller.activity.CrimePagerActivity;
 import com.example.criminalintent.model.Crime;
 import com.example.criminalintent.repository.CrimeRepository;
-import com.example.criminalintent.repository.RepositoryInterface;
+import com.example.criminalintent.repository.IRepository;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class CrimeListFragment extends Fragment {
 
     public static final String TAG = "CLF";
     private RecyclerView mRecyclerView;
-    private RepositoryInterface<Crime> mRepository;
+    private IRepository<Crime> mRepository;
     private CrimeAdapter mAdapter;
 
     public CrimeListFragment() {
@@ -106,7 +107,8 @@ public class CrimeListFragment extends Fragment {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = CrimeDetailActivity.newIntent(getActivity(), mCrime.getId());
+//                    Intent intent = CrimeDetailActivity.newIntent(getActivity(), mCrime.getId());
+                    Intent intent = CrimePagerActivity.newIntent(getActivity());
                     startActivity(intent);
                 }
             });

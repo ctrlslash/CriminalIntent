@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class CrimeRepository implements RepositoryInterface<Crime> {
+public class CrimeRepository implements IRepository<Crime> {
 
     private static CrimeRepository sCrimeRepository;
     private static final int NUMBER_OF_CRIMES = 100;
@@ -83,5 +83,14 @@ public class CrimeRepository implements RepositoryInterface<Crime> {
     @Override
     public void insertList(List<Crime> crimes) {
         mCrimes.addAll(crimes);
+    }
+
+    @Override
+    public int getPosition(UUID uuid) {
+        for (int i = 0; i < mCrimes.size(); i++) {
+            if (mCrimes.get(i).getId().equals(uuid))
+                return i;
+        }
+        return -1;
     }
 }
