@@ -1,5 +1,7 @@
 package com.example.criminalintent.controller.fragment;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,9 +12,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -21,6 +25,7 @@ import com.example.criminalintent.model.Crime;
 import com.example.criminalintent.repository.CrimeRepository;
 import com.example.criminalintent.repository.IRepository;
 
+import java.util.Date;
 import java.util.UUID;
 
 public class CrimeDetailFragment extends Fragment {
@@ -29,6 +34,7 @@ public class CrimeDetailFragment extends Fragment {
     public static final String BUNDLE_CRIME = "crime";
     public static final String ARG_CRIME_ID = "CrimeId";
     public static final String DIALOG_FRAGMENT_TAG = "Dialog";
+    public static final int DATE_PICKER_REQUEST_CODE = 0;
 
     private Crime mCrime;
     private IRepository<Crime> mRepository;
@@ -142,7 +148,11 @@ public class CrimeDetailFragment extends Fragment {
         mButtonDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance();
+                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(mCrime.getDate());
+
+                //create parent-child relations between CrimeDetailFragment-DatePickerFragment
+                datePickerFragment.setTargetFragment(CrimeDetailFragment.this, DATE_PICKER_REQUEST_CODE);
+
                 datePickerFragment.show(getFragmentManager(), DIALOG_FRAGMENT_TAG);
             }
         });
@@ -151,4 +161,27 @@ public class CrimeDetailFragment extends Fragment {
     private void updateCrime() {
         mRepository.update(mCrime);
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode != Activity.RESULT_OK || data == null)
+            return;
+
+        if (requestCode == DATE_PICKER_REQUEST_CODE) {
+            //get response from intent extra, which is user selected date
+            Date userSelectedDate = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_USER_SELECTED_DATE);
+
+            mCrime.setDate(userSelectedDate);
+            mButtonDate.setText(mCrime.getDate().toString());
+
+            updateCrime();
+        }
+    }
+
+    /*void onResultFromDatePicker(Date userPickedDate) {
+        mCrime.setDate(userPickedDate);
+        mButtonDate.setText(mCrime.getDate().toString());
+
+        updateCrime();
+    }*/
 }
