@@ -1,5 +1,7 @@
 package com.example.criminalintent.model;
 
+import com.example.criminalintent.controller.utils.DateUtils;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
@@ -41,7 +43,8 @@ public class Crime implements Serializable {
 
     public Crime() {
         mId = UUID.randomUUID();
-        mDate = new Date();
+//        mDate = new Date(); //current date
+        mDate = DateUtils.getRandomDate(2000, 2020); //random date between 2000 to 2020
     }
 
     public Crime(String title, boolean solved) {

@@ -14,6 +14,7 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.criminalintent.R;
 import com.example.criminalintent.model.Crime;
@@ -27,6 +28,7 @@ public class CrimeDetailFragment extends Fragment {
     public static final String TAG = "CDF";
     public static final String BUNDLE_CRIME = "crime";
     public static final String ARG_CRIME_ID = "CrimeId";
+    public static final String DIALOG_FRAGMENT_TAG = "Dialog";
 
     private Crime mCrime;
     private IRepository<Crime> mRepository;
@@ -110,7 +112,6 @@ public class CrimeDetailFragment extends Fragment {
         mEditTextCrimeTitle.setText(mCrime.getTitle());
         mCheckBoxSolved.setChecked(mCrime.isSolved());
         mButtonDate.setText(mCrime.getDate().toString());
-        mButtonDate.setEnabled(false);
     }
 
     private void setListeners() {
@@ -136,6 +137,13 @@ public class CrimeDetailFragment extends Fragment {
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 mCrime.setSolved(checked);
                 Log.d(TAG, mCrime.toString());
+            }
+        });
+        mButtonDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance();
+                datePickerFragment.show(getFragmentManager(), DIALOG_FRAGMENT_TAG);
             }
         });
     }

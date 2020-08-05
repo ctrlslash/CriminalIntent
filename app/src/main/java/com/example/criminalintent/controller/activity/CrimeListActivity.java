@@ -18,4 +18,8 @@ public class CrimeListActivity extends SingleFragmentActivity {
     public Fragment createFragment() {
         return CrimeListFragment.newInstance();
     }
+
+    public void test() {
+
+    }
 }

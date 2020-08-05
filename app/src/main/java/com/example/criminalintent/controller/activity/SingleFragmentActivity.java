@@ -15,6 +15,8 @@ import com.example.criminalintent.R;
  */
 public abstract class SingleFragmentActivity extends AppCompatActivity {
 
+    public static final String FRAGMENT_TAG = "FragmentActivity";
+
     public abstract Fragment createFragment();
 
     @Override
@@ -28,7 +30,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         if (fragment == null) {
             fragmentManager
                     .beginTransaction()
-                    .add(R.id.fragment_container, createFragment())
+                    .add(R.id.fragment_container, createFragment(), FRAGMENT_TAG)
                     .commit();
         }
     }
