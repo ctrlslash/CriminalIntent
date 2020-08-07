@@ -4,8 +4,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menu_item_crime_add"
+        android:id="@+id/menu_item_new_crime"
         android:icon="@android:drawable/ic_menu_add"
-        android:title="@string/menu_add_crime"
+        android:title="@string/new_crime"
         app:showAsAction="ifRoom|withText" />
 </menu>
