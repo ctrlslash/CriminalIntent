@@ -103,12 +103,6 @@ public class DatePickerFragment extends DialogFragment {
     }
 
     private void setResult(Date userSelectedDate) {
-        /*Fragment fragment = getTargetFragment();
-        if (fragment != null && fragment instanceof CrimeDetailFragment) {
-            CrimeDetailFragment crimeDetailFragment = (CrimeDetailFragment) fragment;
-            crimeDetailFragment.onResultFromDatePicker(datePicked);
-        }*/
-
         Fragment fragment = getTargetFragment();
         Intent intent = new Intent();
         intent.putExtra(EXTRA_USER_SELECTED_DATE, userSelectedDate);

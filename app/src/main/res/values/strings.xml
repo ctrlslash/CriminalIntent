@@ -9,4 +9,5 @@
     <string name="crime_solved_label">Solved</string>
 
     <string name="date_picker_title">Date Of Crime</string>
+    <string name="menu_add_crime">Add Crime</string>
 </resources>
