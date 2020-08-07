@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,9 +30,12 @@ import java.util.List;
 public class CrimeListFragment extends Fragment {
 
     public static final String TAG = "CLF";
+    public static final String BUNDLE_IS_SUBTITLE_VISIBLE = "isSubtitleVisible";
     private RecyclerView mRecyclerView;
     private IRepository<Crime> mRepository;
     private CrimeAdapter mAdapter;
+
+    private boolean mIsSubtitleVisible = false;
 
     public CrimeListFragment() {
         // Required empty public constructor
@@ -52,6 +56,9 @@ public class CrimeListFragment extends Fragment {
 
         setHasOptionsMenu(true);
         mRepository = CrimeRepository.getInstance();
+
+        if (savedInstanceState != null)
+            mIsSubtitleVisible = savedInstanceState.getBoolean(BUNDLE_IS_SUBTITLE_VISIBLE, false);
     }
 
     @Override
@@ -80,6 +87,7 @@ public class CrimeListFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_crime_list, menu);
+        updateMenuItemSubtitle(menu.findItem(R.id.menu_item_subtitle));
     }
 
     @Override
@@ -88,9 +96,29 @@ public class CrimeListFragment extends Fragment {
             case R.id.menu_item_new_crime:
                 addCrime();
                 return true;
+            case R.id.menu_item_subtitle:
+                mIsSubtitleVisible = !mIsSubtitleVisible;
+//                updateMenuItemSubtitle(item);
+                updateSubtitle();
+                getActivity().invalidateOptionsMenu();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void updateMenuItemSubtitle(@NonNull MenuItem item) {
+        if (mIsSubtitleVisible)
+            item.setTitle(R.string.hide_subtitle);
+        else
+            item.setTitle(R.string.show_subtitle);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean(BUNDLE_IS_SUBTITLE_VISIBLE, mIsSubtitleVisible);
     }
 
     private void findViews(View view) {
@@ -106,6 +134,8 @@ public class CrimeListFragment extends Fragment {
         } else {
             mAdapter.notifyDataSetChanged();
         }
+
+        updateSubtitle();
     }
 
     private void addCrime() {
@@ -115,6 +145,18 @@ public class CrimeListFragment extends Fragment {
 
         Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
         startActivity(intent);
+    }
+
+    private void updateSubtitle() {
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+
+        int numberOfCrimes = mRepository.getList().size();
+        String crimesString = getString(R.string.subtitle_format, numberOfCrimes);
+
+        if (!mIsSubtitleVisible)
+            crimesString = null;
+
+        activity.getSupportActionBar().setSubtitle(crimesString);
     }
 
     //view holder responsibility: hold reference to row views.
@@ -135,7 +177,6 @@ public class CrimeListFragment extends Fragment {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//                    Intent intent = CrimeDetailActivity.newIntent(getActivity(), mCrime.getId());
                     Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId());
                     startActivity(intent);
                 }

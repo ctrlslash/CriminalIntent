@@ -5,7 +5,11 @@
 
     <item
         android:id="@+id/menu_item_new_crime"
-        android:icon="@android:drawable/ic_menu_add"
+        android:icon="@drawable/ic_menu_add"
         android:title="@string/new_crime"
+        app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/menu_item_subtitle"
+        android:title="@string/show_subtitle"
         app:showAsAction="ifRoom|withText" />
 </menu>
