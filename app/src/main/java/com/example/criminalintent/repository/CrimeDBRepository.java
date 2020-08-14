@@ -1,0 +1,107 @@
+package com.example.criminalintent.repository;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+
+import com.example.criminalintent.database.CrimeBaseHelper;
+import com.example.criminalintent.model.Crime;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+public class CrimeDBRepository implements IRepository<Crime> {
+
+    private static CrimeDBRepository sCrimeRepository;
+    private static Context mContext;
+
+    private static final int NUMBER_OF_CRIMES = 5;
+
+    private List<Crime> mCrimes;
+    private SQLiteDatabase mDatabase;
+
+    public static CrimeDBRepository getInstance(Context context) {
+        mContext = context;
+        if (sCrimeRepository == null)
+            sCrimeRepository = new CrimeDBRepository();
+
+        return sCrimeRepository;
+    }
+
+    private CrimeDBRepository() {
+        CrimeBaseHelper crimeBaseHelper = new CrimeBaseHelper(mContext);
+        mDatabase = crimeBaseHelper.getWritableDatabase();
+
+        mCrimes = new ArrayList<>();
+        for (int i = 0; i < NUMBER_OF_CRIMES; i++) {
+            Crime crime = new Crime();
+            crime.setTitle("Crime#" + (i + 1));
+            crime.setSolved(i % 2 == 0);
+
+            mCrimes.add(crime);
+        }
+    }
+
+    //Read all
+    @Override
+    public List<Crime> getList() {
+        return mCrimes;
+    }
+
+    @Override
+    public void setList(List<Crime> crimes) {
+        mCrimes = crimes;
+    }
+
+    //Read one
+    @Override
+    public Crime get(UUID uuid) {
+        for (Crime crime: mCrimes) {
+            if (crime.getId().equals(uuid))
+                return crime;
+        }
+
+        return null;
+    }
+
+    //Update one
+    @Override
+    public void update(Crime crime) {
+        Crime updateCrime = get(crime.getId());
+        updateCrime.setTitle(crime.getTitle());
+        updateCrime.setDate(crime.getDate());
+        updateCrime.setSolved(crime.isSolved());
+    }
+
+    //Delete
+    @Override
+    public void delete(Crime crime) {
+        for (int i = 0; i < mCrimes.size(); i++) {
+            if (mCrimes.get(i).getId().equals(crime.getId())) {
+                mCrimes.remove(i);
+                return;
+            }
+        }
+    }
+
+    //Create: Insert
+    @Override
+    public void insert(Crime crime) {
+        mCrimes.add(crime);
+    }
+
+    //Create: Insert
+    @Override
+    public void insertList(List<Crime> crimes) {
+        mCrimes.addAll(crimes);
+    }
+
+    @Override
+    public int getPosition(UUID uuid) {
+        for (int i = 0; i < mCrimes.size(); i++) {
+            if (mCrimes.get(i).getId().equals(uuid))
+                return i;
+        }
+        return -1;
+    }
+}
