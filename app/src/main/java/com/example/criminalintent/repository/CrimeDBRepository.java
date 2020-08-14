@@ -3,10 +3,12 @@ package com.example.criminalintent.repository;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.criminalintent.database.CrimeBaseHelper;
 import com.example.criminalintent.database.CrimeDBSchema;
+import com.example.criminalintent.database.cursorwrapper.CrimeCursorWrapper;
 import com.example.criminalintent.model.Crime;
 import com.example.criminalintent.database.CrimeDBSchema.CrimeTable.*;
 
@@ -14,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+import javax.crypto.Cipher;
 
 public class CrimeDBRepository implements IRepository<Crime> {
 
@@ -41,25 +45,12 @@ public class CrimeDBRepository implements IRepository<Crime> {
     @Override
     public List<Crime> getList() {
         List<Crime> crimes = new ArrayList<>();
-        Cursor cursor = mDatabase.query(CrimeDBSchema.CrimeTable.NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
+        CrimeCursorWrapper cursor = queryCrimes(null, null);
         try {
             cursor.moveToFirst();
 
             while (!cursor.isAfterLast()) {
-                String stringUUID = cursor.getString(cursor.getColumnIndex(COLS.UUID));
-                String title = cursor.getString(cursor.getColumnIndex(COLS.TITLE));
-                Date date = new Date(cursor.getLong(cursor.getColumnIndex(COLS.DATE)));
-                boolean solved = cursor.getInt(cursor.getColumnIndex(COLS.SOLVED)) == 0 ? false : true;
-
-                Crime crime = new Crime(UUID.fromString(stringUUID), title, date, solved);
-                crimes.add(crime);
-
+                crimes.add(cursor.getCrime());
                 cursor.moveToNext();
             }
         } finally {
@@ -82,33 +73,51 @@ public class CrimeDBRepository implements IRepository<Crime> {
                 return crime;
         }*/
 
-        return null;
+        String selection = COLS.UUID + "=?";
+        String[] selectionArgs = new String[]{uuid.toString()};
+
+        CrimeCursorWrapper cursor = queryCrimes(selection, selectionArgs);
+        try {
+            cursor.moveToFirst();
+            return cursor.getCrime();
+        } finally {
+            cursor.close();
+        }
+    }
+
+    private CrimeCursorWrapper queryCrimes(String selection, String[] selectionArgs) {
+        Cursor cursor = mDatabase.query(CrimeDBSchema.CrimeTable.NAME,
+                null,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null);
+
+        CrimeCursorWrapper crimeCursorWrapper = new CrimeCursorWrapper(cursor);
+        return crimeCursorWrapper;
     }
 
     //Update one
     @Override
     public void update(Crime crime) {
-        Crime updateCrime = get(crime.getId());
-        updateCrime.setTitle(crime.getTitle());
-        updateCrime.setDate(crime.getDate());
-        updateCrime.setSolved(crime.isSolved());
+        ContentValues values = getCrimeContentValue(crime);
+        String where = COLS.UUID + "=?";
+        String[] whereArgs = new String[]{crime.getId().toString()};
+        mDatabase.update(CrimeDBSchema.CrimeTable.NAME, values, where, whereArgs);
     }
 
     //Delete
     @Override
     public void delete(Crime crime) {
-        /*for (int i = 0; i < mCrimes.size(); i++) {
-            if (mCrimes.get(i).getId().equals(crime.getId())) {
-                mCrimes.remove(i);
-                return;
-            }
-        }*/
+        String where = COLS.UUID + "=?";
+        String[] whereArgs = new String[]{crime.getId().toString()};
+        mDatabase.delete(CrimeDBSchema.CrimeTable.NAME, where, whereArgs);
     }
 
     //Create: Insert
     @Override
     public void insert(Crime crime) {
-//        mCrimes.add(crime);
         ContentValues values = getCrimeContentValue(crime);
         mDatabase.insert(CrimeDBSchema.CrimeTable.NAME, null, values);
     }
@@ -116,15 +125,16 @@ public class CrimeDBRepository implements IRepository<Crime> {
     //Create: Insert
     @Override
     public void insertList(List<Crime> crimes) {
-//        mCrimes.addAll(crimes);
     }
 
     @Override
     public int getPosition(UUID uuid) {
-        /*for (int i = 0; i < mCrimes.size(); i++) {
-            if (mCrimes.get(i).getId().equals(uuid))
+        List<Crime> crimes = getList();
+        for (int i = 0; i < crimes.size(); i++) {
+            if (crimes.get(i).getId().equals(uuid))
                 return i;
-        }*/
+        }
+
         return -1;
     }
 
