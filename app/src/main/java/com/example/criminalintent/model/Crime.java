@@ -41,10 +41,30 @@ public class Crime implements Serializable {
         mSolved = solved;
     }
 
+    /**
+     * if you don't have any uuid (that means you want to create new crime) call this
+     * constructor.
+     */
     public Crime() {
-        mId = UUID.randomUUID();
-//        mDate = new Date(); //current date
-        mDate = DateUtils.getRandomDate(2000, 2020); //random date between 2000 to 2020
+        this(UUID.randomUUID());
+//        mDate = DateUtils.getRandomDate(2000, 2020); //random date between 2000 to 2020
+    }
+
+    /**
+     * if you have a uuid for crime use this constructor. (that means you don't want to create
+     * a new crime).
+     * @param uuid
+     */
+    public Crime(UUID uuid) {
+        mId = uuid;
+        mDate = new Date(); //current date
+    }
+
+    public Crime(UUID id, String title, Date date, boolean solved) {
+        mId = id;
+        mTitle = title;
+        mDate = date;
+        mSolved = solved;
     }
 
     public Crime(String title, boolean solved) {

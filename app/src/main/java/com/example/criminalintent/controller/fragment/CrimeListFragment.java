@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.example.criminalintent.R;
 import com.example.criminalintent.controller.activity.CrimePagerActivity;
 import com.example.criminalintent.model.Crime;
+import com.example.criminalintent.repository.CrimeDBRepository;
 import com.example.criminalintent.repository.CrimeRepository;
 import com.example.criminalintent.repository.IRepository;
 
@@ -55,7 +56,7 @@ public class CrimeListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
-        mRepository = CrimeRepository.getInstance();
+        mRepository = CrimeDBRepository.getInstance(getActivity());
 
         if (savedInstanceState != null)
             mIsSubtitleVisible = savedInstanceState.getBoolean(BUNDLE_IS_SUBTITLE_VISIBLE, false);
@@ -139,9 +140,8 @@ public class CrimeListFragment extends Fragment {
     }
 
     private void addCrime() {
-        IRepository repository = CrimeRepository.getInstance();
         Crime crime = new Crime();
-        repository.insert(crime);
+        mRepository.insert(crime);
 
         Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
         startActivity(intent);

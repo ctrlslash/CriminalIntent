@@ -31,15 +31,14 @@ public class CrimeRepository implements IRepository<Crime> {
         }
     }
 
+    public void setList(List<Crime> crimes) {
+        mCrimes = crimes;
+    }
+
     //Read all
     @Override
     public List<Crime> getList() {
         return mCrimes;
-    }
-
-    @Override
-    public void setList(List<Crime> crimes) {
-        mCrimes = crimes;
     }
 
     //Read one

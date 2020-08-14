@@ -23,11 +23,12 @@ public class CrimeBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + NAME + "(" +
-                COLS.ID + " int primary key autoincrement," +
+                COLS.ID + " integer primary key autoincrement," +
                 COLS.UUID + " text," +
                 COLS.TITLE + " text," +
                 COLS.DATE + " long," +
-                COLS.SOLVED + "int);");
+                COLS.SOLVED + " integer" +
+                ");");
     }
 
     /**
