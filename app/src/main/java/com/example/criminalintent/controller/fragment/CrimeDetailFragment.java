@@ -12,21 +12,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.DatePicker;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.example.criminalintent.R;
 import com.example.criminalintent.model.Crime;
 import com.example.criminalintent.repository.CrimeDBRepository;
-import com.example.criminalintent.repository.CrimeRepository;
 import com.example.criminalintent.repository.IRepository;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 public class CrimeDetailFragment extends Fragment {
@@ -43,7 +42,8 @@ public class CrimeDetailFragment extends Fragment {
     private EditText mEditTextCrimeTitle;
     private Button mButtonDate;
     private CheckBox mCheckBoxSolved;
-
+    private Button mButtonSuspect;
+    private Button mButtonShareReport;
 
     public CrimeDetailFragment() {
         //empty public constructor
@@ -113,6 +113,8 @@ public class CrimeDetailFragment extends Fragment {
         mEditTextCrimeTitle = view.findViewById(R.id.crime_title);
         mButtonDate = view.findViewById(R.id.crime_date);
         mCheckBoxSolved = view.findViewById(R.id.crime_solved);
+        mButtonSuspect = view.findViewById(R.id.choose_suspect);
+        mButtonShareReport = view.findViewById(R.id.share_report);
     }
 
     private void initViews() {
@@ -157,6 +159,46 @@ public class CrimeDetailFragment extends Fragment {
                 datePickerFragment.show(getFragmentManager(), DIALOG_FRAGMENT_TAG);
             }
         });
+
+        mButtonShareReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, getReportText());
+                sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
+                sendIntent.setType("text/plain");
+
+                Intent shareIntent = Intent.createChooser(sendIntent, null);
+                startActivity(shareIntent);
+            }
+        });
+
+        mButtonSuspect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: choose suspect from contact application
+            }
+        });
+    }
+
+    private String getReportText() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        String dateString = simpleDateFormat.format(mCrime.getDate()) ;
+
+        String solvedString = mCrime.isSolved() ?
+                getString(R.string.crime_report_solved) :
+                getString(R.string.crime_report_unsolved);
+
+        //TODO: implement the suspect string after adding suspect.
+        String suspectString = "no suspect";
+
+        String report = getString(R.string.crime_report,
+                mCrime.getTitle(),
+                dateString,
+                solvedString,
+                suspectString);
+
+        return report;
     }
 
     private void updateCrime() {

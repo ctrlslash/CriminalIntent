@@ -3,21 +3,17 @@ package com.example.criminalintent.repository;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.criminalintent.database.CrimeBaseHelper;
 import com.example.criminalintent.database.CrimeDBSchema;
+import com.example.criminalintent.database.CrimeDBSchema.CrimeTable.COLS;
 import com.example.criminalintent.database.cursorwrapper.CrimeCursorWrapper;
 import com.example.criminalintent.model.Crime;
-import com.example.criminalintent.database.CrimeDBSchema.CrimeTable.*;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
-import javax.crypto.Cipher;
 
 public class CrimeDBRepository implements IRepository<Crime> {
 
@@ -60,23 +56,16 @@ public class CrimeDBRepository implements IRepository<Crime> {
         return crimes;
     }
 
-    /*@Override
-    public void setList(List<Crime> crimes) {
-        mCrimes = crimes;
-    }*/
-
     //Read one
     @Override
     public Crime get(UUID uuid) {
-        /*for (Crime crime: mCrimes) {
-            if (crime.getId().equals(uuid))
-                return crime;
-        }*/
-
         String selection = COLS.UUID + "=?";
         String[] selectionArgs = new String[]{uuid.toString()};
 
         CrimeCursorWrapper cursor = queryCrimes(selection, selectionArgs);
+        if (cursor == null || cursor.getCount() == 0)
+            return null;
+
         try {
             cursor.moveToFirst();
             return cursor.getCrime();
