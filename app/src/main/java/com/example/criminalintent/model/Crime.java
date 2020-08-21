@@ -12,6 +12,7 @@ public class Crime implements Serializable {
     private String mTitle;
     private Date mDate;
     private boolean mSolved;
+    private String mSuspect;
 
     public UUID getId() {
         return mId;
@@ -41,6 +42,14 @@ public class Crime implements Serializable {
         mSolved = solved;
     }
 
+    public String getSuspect() {
+        return mSuspect;
+    }
+
+    public void setSuspect(String suspect) {
+        mSuspect = suspect;
+    }
+
     /**
      * if you don't have any uuid (that means you want to create new crime) call this
      * constructor.
@@ -60,11 +69,12 @@ public class Crime implements Serializable {
         mDate = new Date(); //current date
     }
 
-    public Crime(UUID id, String title, Date date, boolean solved) {
+    public Crime(UUID id, String title, Date date, boolean solved, String suspect) {
         mId = id;
         mTitle = title;
         mDate = date;
         mSolved = solved;
+        mSuspect = suspect;
     }
 
     public Crime(String title, boolean solved) {
@@ -80,6 +90,7 @@ public class Crime implements Serializable {
                 ", mTitle='" + mTitle + '\'' +
                 ", mDate=" + mDate +
                 ", mSolved=" + mSolved +
+                ", mSuspect='" + mSuspect + '\'' +
                 '}';
     }
 }

@@ -27,7 +27,8 @@ public class CrimeBaseHelper extends SQLiteOpenHelper {
                 COLS.UUID + " text," +
                 COLS.TITLE + " text," +
                 COLS.DATE + " long," +
-                COLS.SOLVED + " integer" +
+                COLS.SOLVED + " integer," +
+                COLS.SUSPECT + " text" +
                 ");");
     }
 
