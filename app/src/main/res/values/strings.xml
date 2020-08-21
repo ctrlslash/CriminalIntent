@@ -22,5 +22,7 @@
     <string name="crime_report_solved">The case is solved</string>
     <string name="crime_report_unsolved">The case is not solved</string>
     <string name="crime_report_subject">CriminalIntent Crime Report</string>
+    <string name="crime_report_no_suspect">there is no suspect.</string>
+    <string name="crime_report_suspect">the suspect is %s.</string>
 
 </resources>

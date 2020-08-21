@@ -2,7 +2,10 @@ package com.example.criminalintent.controller.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -25,7 +28,6 @@ import com.example.criminalintent.repository.IRepository;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.UUID;
 
 public class CrimeDetailFragment extends Fragment {
@@ -34,7 +36,9 @@ public class CrimeDetailFragment extends Fragment {
     public static final String BUNDLE_CRIME = "crime";
     public static final String ARG_CRIME_ID = "CrimeId";
     public static final String DIALOG_FRAGMENT_TAG = "Dialog";
-    public static final int DATE_PICKER_REQUEST_CODE = 0;
+
+    public static final int REQUEST_CODE_DATE_PICKER = 0;
+    public static final int REQUEST_CODE_SELECT_CONTACT = 1;
 
     private Crime mCrime;
     private IRepository<Crime> mRepository;
@@ -121,6 +125,9 @@ public class CrimeDetailFragment extends Fragment {
         mEditTextCrimeTitle.setText(mCrime.getTitle());
         mCheckBoxSolved.setChecked(mCrime.isSolved());
         mButtonDate.setText(mCrime.getDate().toString());
+
+        if (mCrime.getSuspect() != null)
+            mButtonSuspect.setText(mCrime.getSuspect());
     }
 
     private void setListeners() {
@@ -154,7 +161,7 @@ public class CrimeDetailFragment extends Fragment {
                 DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(mCrime.getDate());
 
                 //create parent-child relations between CrimeDetailFragment-DatePickerFragment
-                datePickerFragment.setTargetFragment(CrimeDetailFragment.this, DATE_PICKER_REQUEST_CODE);
+                datePickerFragment.setTargetFragment(CrimeDetailFragment.this, REQUEST_CODE_DATE_PICKER);
 
                 datePickerFragment.show(getFragmentManager(), DIALOG_FRAGMENT_TAG);
             }
@@ -169,14 +176,18 @@ public class CrimeDetailFragment extends Fragment {
                 sendIntent.setType("text/plain");
 
                 Intent shareIntent = Intent.createChooser(sendIntent, null);
-                startActivity(shareIntent);
+                if (sendIntent.resolveActivity(getActivity().getPackageManager()) != null)
+                    startActivity(shareIntent);
             }
         });
 
         mButtonSuspect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: choose suspect from contact application
+                Intent pickContactIntent = new Intent(Intent.ACTION_PICK);
+                pickContactIntent.setType(ContactsContract.Contacts.CONTENT_TYPE);
+                if (pickContactIntent.resolveActivity(getActivity().getPackageManager()) != null)
+                    startActivityForResult(pickContactIntent, REQUEST_CODE_SELECT_CONTACT);
             }
         });
     }
@@ -189,8 +200,9 @@ public class CrimeDetailFragment extends Fragment {
                 getString(R.string.crime_report_solved) :
                 getString(R.string.crime_report_unsolved);
 
-        //TODO: implement the suspect string after adding suspect.
-        String suspectString = "no suspect";
+        String suspectString = mCrime.getSuspect() == null ?
+                getString(R.string.crime_report_no_suspect) :
+                getString(R.string.crime_report_suspect, mCrime.getSuspect());
 
         String report = getString(R.string.crime_report,
                 mCrime.getTitle(),
@@ -210,7 +222,7 @@ public class CrimeDetailFragment extends Fragment {
         if (resultCode != Activity.RESULT_OK || data == null)
             return;
 
-        if (requestCode == DATE_PICKER_REQUEST_CODE) {
+        if (requestCode == REQUEST_CODE_DATE_PICKER) {
             //get response from intent extra, which is user selected date
             Date userSelectedDate = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_USER_SELECTED_DATE);
 
@@ -218,13 +230,30 @@ public class CrimeDetailFragment extends Fragment {
             mButtonDate.setText(mCrime.getDate().toString());
 
             updateCrime();
+        } else if (requestCode == REQUEST_CODE_SELECT_CONTACT) {
+            Uri contactUri = data.getData();
+
+            String[] columns = new String[] {ContactsContract.Contacts.DISPLAY_NAME};
+            Cursor cursor = getActivity().getContentResolver().query(contactUri,
+                    columns,
+                    null,
+                    null,
+                    null);
+
+            if (cursor == null || cursor.getCount() == 0)
+                return;
+
+            try {
+                cursor.moveToFirst();
+
+                String suspect = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                mCrime.setSuspect(suspect);
+                updateCrime();
+
+                mButtonSuspect.setText(mCrime.getSuspect());
+            } finally {
+                cursor.close();
+            }
         }
     }
-
-    /*void onResultFromDatePicker(Date userPickedDate) {
-        mCrime.setDate(userPickedDate);
-        mButtonDate.setText(mCrime.getDate().toString());
-
-        updateCrime();
-    }*/
 }
