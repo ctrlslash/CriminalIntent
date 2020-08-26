@@ -1,7 +1,10 @@
 package com.example.criminalintent.repository;
 
+import android.content.Context;
+
 import com.example.criminalintent.model.Crime;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -91,5 +94,11 @@ public class CrimeRepository implements IRepository<Crime> {
                 return i;
         }
         return -1;
+    }
+
+    @Override
+    public File getPhotoFile(Context context, Crime crime) {
+        File photoFile = new File(context.getFilesDir(), crime.getPhotoFileName());
+        return photoFile;
     }
 }

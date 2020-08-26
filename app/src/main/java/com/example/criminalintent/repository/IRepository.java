@@ -1,5 +1,10 @@
 package com.example.criminalintent.repository;
 
+import android.content.Context;
+
+import com.example.criminalintent.model.Crime;
+
+import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,4 +16,5 @@ public interface IRepository<E> {
     void insert(E e);
     void insertList(List<E> list);
     int getPosition(UUID uuid);
+    File getPhotoFile(Context context, Crime crime);
 }

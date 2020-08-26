@@ -11,6 +11,7 @@ import com.example.criminalintent.database.CrimeDBSchema.CrimeTable.COLS;
 import com.example.criminalintent.database.cursorwrapper.CrimeCursorWrapper;
 import com.example.criminalintent.model.Crime;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -125,6 +126,12 @@ public class CrimeDBRepository implements IRepository<Crime> {
         }
 
         return -1;
+    }
+
+    @Override
+    public File getPhotoFile(Context context, Crime crime) {
+        File photoFile = new File(context.getFilesDir(), crime.getPhotoFileName());
+        return photoFile;
     }
 
     /**

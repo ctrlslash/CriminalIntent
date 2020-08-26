@@ -83,6 +83,14 @@ public class Crime implements Serializable {
         this.mSolved = solved;
     }
 
+    /**
+     * This is calculator field.
+     * @return
+     */
+    public String getPhotoFileName() {
+        return "IMG_" + getId() + ".jpg";
+    }
+
     @Override
     public String toString() {
         return "Crime{" +
