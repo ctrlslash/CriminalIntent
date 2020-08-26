@@ -3,9 +3,11 @@ package com.example.criminalintent.controller.fragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -16,6 +18,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,6 +43,7 @@ public class CrimeDetailFragment extends Fragment {
 
     public static final int REQUEST_CODE_DATE_PICKER = 0;
     public static final int REQUEST_CODE_SELECT_CONTACT = 1;
+    private static final int REQUEST_CODE_IMAGE_CAPTURE = 2;
 
     private Crime mCrime;
     private IRepository<Crime> mRepository;
@@ -48,6 +53,8 @@ public class CrimeDetailFragment extends Fragment {
     private CheckBox mCheckBoxSolved;
     private Button mButtonSuspect;
     private Button mButtonShareReport;
+    private ImageButton mImageButtonCaptureImage;
+    private ImageView mImageViewPicture;
 
     public CrimeDetailFragment() {
         //empty public constructor
@@ -119,6 +126,8 @@ public class CrimeDetailFragment extends Fragment {
         mCheckBoxSolved = view.findViewById(R.id.crime_solved);
         mButtonSuspect = view.findViewById(R.id.choose_suspect);
         mButtonShareReport = view.findViewById(R.id.share_report);
+        mImageButtonCaptureImage = view.findViewById(R.id.capture_image);
+        mImageViewPicture = view.findViewById(R.id.crime_picture);
     }
 
     private void initViews() {
@@ -190,6 +199,16 @@ public class CrimeDetailFragment extends Fragment {
                     startActivityForResult(pickContactIntent, REQUEST_CODE_SELECT_CONTACT);
             }
         });
+
+        mImageButtonCaptureImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    getActivity().startActivityForResult(takePictureIntent, REQUEST_CODE_IMAGE_CAPTURE);
+                }
+            }
+        });
     }
 
     private String getReportText() {
@@ -254,6 +273,9 @@ public class CrimeDetailFragment extends Fragment {
             } finally {
                 cursor.close();
             }
+        } else if (requestCode == REQUEST_CODE_IMAGE_CAPTURE) {
+            Bitmap imageBitmap = data.getParcelableExtra("data");
+            mImageViewPicture.setImageBitmap(imageBitmap);
         }
     }
 }
