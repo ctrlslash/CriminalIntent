@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="activity_master_detail" type="layout">@layout/activity_two_pane</item>
+    <item name="is_tow_pane" type="bool">true</item>
 </resources>

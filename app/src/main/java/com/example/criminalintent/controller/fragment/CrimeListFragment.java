@@ -1,5 +1,6 @@
 package com.example.criminalintent.controller.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -23,7 +24,6 @@ import com.example.criminalintent.R;
 import com.example.criminalintent.controller.activity.CrimePagerActivity;
 import com.example.criminalintent.model.Crime;
 import com.example.criminalintent.repository.CrimeDBRepository;
-import com.example.criminalintent.repository.CrimeRepository;
 import com.example.criminalintent.repository.IRepository;
 
 import java.util.List;
@@ -35,6 +35,7 @@ public class CrimeListFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private IRepository<Crime> mRepository;
     private CrimeAdapter mAdapter;
+    private CallBacks mCallBacks;
 
     private boolean mIsSubtitleVisible = false;
 
@@ -49,6 +50,25 @@ public class CrimeListFragment extends Fragment {
         CrimeListFragment fragment = new CrimeListFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (context instanceof CallBacks) {
+            mCallBacks = (CallBacks) context;
+        } else {
+            throw new ClassCastException(context.toString()
+                    + " must implement onCrimeSelected");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        mCallBacks = null;
     }
 
     @Override
@@ -178,8 +198,7 @@ public class CrimeListFragment extends Fragment {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId());
-                    startActivity(intent);
+                    mCallBacks.onCrimeSelected(mCrime);
                 }
             });
         }
@@ -238,5 +257,9 @@ public class CrimeListFragment extends Fragment {
             Crime crime = mCrimes.get(position);
             holder.bindCrime(crime);
         }
+    }
+
+    public interface CallBacks {
+        void onCrimeSelected(Crime crime);
     }
 }
