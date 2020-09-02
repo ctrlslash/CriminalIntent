@@ -6,13 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".controller.activity.CrimeDetailActivity">
+    tools:context=".controller.activity.SingleFragmentActivity">
 
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
     </FrameLayout>
 
 </LinearLayout>

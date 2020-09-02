@@ -92,9 +92,6 @@ public class CrimeDetailFragment extends Fragment {
 
         mRepository = CrimeDBRepository.getInstance(getActivity());
 
-        //This is very very wrong: this is memory of hosted activity
-        //UUID crimeId = (UUID) getActivity().getIntent().getSerializableExtra(CrimeDetailActivity.EXTRA_CRIME_ID);
-
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = mRepository.get(crimeId);
 
@@ -215,20 +212,6 @@ public class CrimeDetailFragment extends Fragment {
         mImageButtonCaptureImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*File maktabDir = new File("/data/data/com.example.criminalintent/maktab");
-                File salam = new File(maktabDir, "salam.jpg");
-                try {
-                    if (!maktabDir.exists()) {
-                        maktabDir.mkdir();
-                    }
-
-                    if (salam.exists())
-                        salam.delete();
-                    else
-                        salam.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }*/
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                     if (mPhotoFile == null)
@@ -324,12 +307,7 @@ public class CrimeDetailFragment extends Fragment {
                 cursor.close();
             }
         } else if (requestCode == REQUEST_CODE_IMAGE_CAPTURE) {
-            /*Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            mImageViewPicture.setImageBitmap(imageBitmap);*/
-
             updatePhotoView();
-
             Uri photoUri = FileProvider.getUriForFile(
                     getActivity(),
                     FILEPROVIDER_AUTHORITY,
