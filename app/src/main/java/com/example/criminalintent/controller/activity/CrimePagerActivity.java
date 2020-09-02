@@ -21,7 +21,7 @@ import com.example.criminalintent.repository.IRepository;
 import java.util.List;
 import java.util.UUID;
 
-public class CrimePagerActivity extends AppCompatActivity {
+public class CrimePagerActivity extends AppCompatActivity implements CrimeDetailFragment.Callbacks {
 
     private static final String EXTRA_CRIME_ID = "com.example.criminalintent.CrimeId";
     public static final String TAG = "CPA";
@@ -58,6 +58,11 @@ public class CrimePagerActivity extends AppCompatActivity {
 
         //this method "must" be placed after setAdapter.
         mCrimeViewPager.setCurrentItem(position);
+    }
+
+    @Override
+    public void onCrimeUpdated(Crime crime) {
+        //nothing
     }
 
     private class CrimeViewPagerAdapter extends FragmentStateAdapter {

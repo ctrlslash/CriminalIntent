@@ -146,7 +146,7 @@ public class CrimeListFragment extends Fragment {
         mRecyclerView = view.findViewById(R.id.recycler_view_crimes);
     }
 
-    private void updateUI() {
+    public void updateUI() {
         List<Crime> crimes = mRepository.getList();
 
         if (mAdapter == null) {
@@ -164,8 +164,11 @@ public class CrimeListFragment extends Fragment {
         Crime crime = new Crime();
         mRepository.insert(crime);
 
-        Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
-        startActivity(intent);
+        mCallBacks.onCrimeSelected(crime);
+        updateUI();
+
+//        Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
+//        startActivity(intent);
     }
 
     private void updateSubtitle() {

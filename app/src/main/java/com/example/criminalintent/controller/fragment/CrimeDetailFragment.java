@@ -1,6 +1,7 @@
 package com.example.criminalintent.controller.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -10,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.telecom.Call;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -64,6 +66,8 @@ public class CrimeDetailFragment extends Fragment {
     private ImageButton mImageButtonCaptureImage;
     private ImageView mImageViewPicture;
 
+    private Callbacks mCallbacks;
+
     public CrimeDetailFragment() {
         //empty public constructor
     }
@@ -83,6 +87,18 @@ public class CrimeDetailFragment extends Fragment {
         CrimeDetailFragment fragment = new CrimeDetailFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (context instanceof Callbacks) {
+            mCallbacks = (Callbacks) context;
+        } else {
+            throw new ClassCastException(context.toString()
+                    + " must implement onCrimeUpdated");
+        }
     }
 
     @Override
@@ -120,12 +136,12 @@ public class CrimeDetailFragment extends Fragment {
         outState.putSerializable(BUNDLE_CRIME, mCrime);
     }
 
-    @Override
+    /*@Override
     public void onPause() {
         super.onPause();
 
         updateCrime();
-    }
+    }*/
 
     private void findViews(View view) {
         mEditTextCrimeTitle = view.findViewById(R.id.crime_title);
@@ -159,6 +175,8 @@ public class CrimeDetailFragment extends Fragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 mCrime.setTitle(charSequence.toString());
                 Log.d(TAG, mCrime.toString());
+
+                updateCrime();
             }
 
             @Override
@@ -171,6 +189,8 @@ public class CrimeDetailFragment extends Fragment {
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 mCrime.setSolved(checked);
                 Log.d(TAG, mCrime.toString());
+
+                updateCrime();
             }
         });
         mButtonDate.setOnClickListener(new View.OnClickListener() {
@@ -267,6 +287,7 @@ public class CrimeDetailFragment extends Fragment {
 
     private void updateCrime() {
         mRepository.update(mCrime);
+        mCallbacks.onCrimeUpdated(mCrime);
     }
 
     @Override
@@ -323,5 +344,9 @@ public class CrimeDetailFragment extends Fragment {
             Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), getActivity());
             mImageViewPicture.setImageBitmap(bitmap);
         }
+    }
+
+    public interface Callbacks {
+        void onCrimeUpdated(Crime crime);
     }
 }

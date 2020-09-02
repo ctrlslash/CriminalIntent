@@ -11,7 +11,7 @@ import com.example.criminalintent.controller.fragment.CrimeListFragment;
 import com.example.criminalintent.model.Crime;
 
 public class CrimeListActivity extends SingleFragmentActivity
-        implements CrimeListFragment.CallBacks {
+        implements CrimeListFragment.CallBacks, CrimeDetailFragment.Callbacks {
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, CrimeListActivity.class);
@@ -41,5 +41,13 @@ public class CrimeListActivity extends SingleFragmentActivity
                     .replace(R.id.detail_fragment_container, crimeDetailFragment)
                     .commit();
         }
+    }
+
+    @Override
+    public void onCrimeUpdated(Crime crime) {
+        CrimeListFragment crimeListFragment = (CrimeListFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.fragment_container);
+
+        crimeListFragment.updateUI();
     }
 }
