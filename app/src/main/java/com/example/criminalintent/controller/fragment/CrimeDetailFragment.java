@@ -11,31 +11,25 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
-import android.telecom.Call;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 
 import com.example.criminalintent.R;
+import com.example.criminalintent.database.entities.Crime;
 import com.example.criminalintent.databinding.FragmentCrimeDetailBinding;
-import com.example.criminalintent.model.Crime;
-import com.example.criminalintent.repository.CrimeDBRepository;
-import com.example.criminalintent.repository.IRepository;
+import com.example.criminalintent.repository.CrimeRepository;
 import com.example.criminalintent.utils.PictureUtils;
 
 import java.io.File;
@@ -57,7 +51,7 @@ public class CrimeDetailFragment extends Fragment {
     public static final String FILEPROVIDER_AUTHORITY = "com.example.criminalintent.fileprovider";
 
     private Crime mCrime;
-    private IRepository<Crime> mRepository;
+    private CrimeRepository mRepository;
     private File mPhotoFile;
 
     private FragmentCrimeDetailBinding mBinding;
@@ -72,6 +66,7 @@ public class CrimeDetailFragment extends Fragment {
      * Using factory pattern to create this fragment. every class that want
      * to create this fragment should always call this method "only".
      * no class should call constructor any more.
+     *
      * @param crimeId this fragment need crime id to work properly.
      * @return new CrimeDetailFragment
      */
@@ -102,12 +97,22 @@ public class CrimeDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
 
-        mRepository = CrimeDBRepository.getInstance(getActivity());
-
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
-        mCrime = mRepository.get(crimeId);
+        mRepository = CrimeRepository.getInstance(getActivity());
 
-        mPhotoFile = mRepository.getPhotoFile(getActivity(), mCrime);
+        LiveData<Crime> crimeLiveData = mRepository.getCrimeLiveData(crimeId);
+
+        crimeLiveData.observe(this, new Observer<Crime>() {
+            @Override
+            public void onChanged(Crime crime) {
+                crimeLiveData.removeObserver(this);
+
+                mCrime = crime;
+                mPhotoFile = mRepository.getPhotoFile(mCrime);
+                initViews();
+                setListeners();
+            }
+        });
     }
 
     @Override
@@ -122,17 +127,7 @@ public class CrimeDetailFragment extends Fragment {
                 container,
                 false);
 
-        initViews();
-        setListeners();
-
         return mBinding.getRoot();
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putSerializable(BUNDLE_CRIME, mCrime);
     }
 
     private void initViews() {
@@ -158,7 +153,7 @@ public class CrimeDetailFragment extends Fragment {
                 mCrime.setTitle(charSequence.toString());
                 Log.d(TAG, mCrime.toString());
 
-                updateCrime();
+                updatingCrime();
             }
 
             @Override
@@ -170,7 +165,7 @@ public class CrimeDetailFragment extends Fragment {
             mCrime.setSolved(checked);
             Log.d(TAG, mCrime.toString());
 
-            updateCrime();
+            updatingCrime();
         });
         mBinding.crimeDate.setOnClickListener(view -> {
             DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(mCrime.getDate());
@@ -224,7 +219,7 @@ public class CrimeDetailFragment extends Fragment {
                 takePictureIntent,
                 PackageManager.MATCH_DEFAULT_ONLY);
 
-        for (ResolveInfo activity: activities) {
+        for (ResolveInfo activity : activities) {
             getActivity().grantUriPermission(activity.activityInfo.packageName,
                     photoURI,
                     Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -233,7 +228,7 @@ public class CrimeDetailFragment extends Fragment {
 
     private String getReportText() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        String dateString = simpleDateFormat.format(mCrime.getDate()) ;
+        String dateString = simpleDateFormat.format(mCrime.getDate());
 
         String solvedString = mCrime.isSolved() ?
                 getString(R.string.crime_report_solved) :
@@ -252,8 +247,8 @@ public class CrimeDetailFragment extends Fragment {
         return report;
     }
 
-    private void updateCrime() {
-        mRepository.update(mCrime);
+    private void updatingCrime() {
+        mRepository.updateCrime(mCrime);
         mCallbacks.onCrimeUpdated(mCrime);
     }
 
@@ -269,11 +264,11 @@ public class CrimeDetailFragment extends Fragment {
             mCrime.setDate(userSelectedDate);
             mBinding.crimeDate.setText(mCrime.getDate().toString());
 
-            updateCrime();
+            updatingCrime();
         } else if (requestCode == REQUEST_CODE_SELECT_CONTACT) {
             Uri contactUri = data.getData();
 
-            String[] columns = new String[] {ContactsContract.Contacts.DISPLAY_NAME};
+            String[] columns = new String[]{ContactsContract.Contacts.DISPLAY_NAME};
             Cursor cursor = getActivity().getContentResolver().query(contactUri,
                     columns,
                     null,
@@ -288,7 +283,7 @@ public class CrimeDetailFragment extends Fragment {
 
                 String suspect = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 mCrime.setSuspect(suspect);
-                updateCrime();
+                updatingCrime();
 
                 mBinding.chooseSuspect.setText(mCrime.getSuspect());
             } finally {

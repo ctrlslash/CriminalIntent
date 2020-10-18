@@ -14,16 +14,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.criminalintent.R;
+import com.example.criminalintent.database.entities.Crime;
 import com.example.criminalintent.databinding.FragmentCrimeListBinding;
 import com.example.criminalintent.databinding.ListRowCrimeBinding;
-import com.example.criminalintent.model.Crime;
-import com.example.criminalintent.repository.CrimeDBRepository;
-import com.example.criminalintent.repository.IRepository;
+import com.example.criminalintent.repository.CrimeRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CrimeListFragment extends Fragment {
@@ -33,7 +34,7 @@ public class CrimeListFragment extends Fragment {
 
     private FragmentCrimeListBinding mBinding;
 
-    private IRepository<Crime> mRepository;
+    private CrimeRepository mRepository;
     private CrimeAdapter mAdapter;
     private CallBacks mCallBacks;
 
@@ -76,10 +77,12 @@ public class CrimeListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
-        mRepository = CrimeDBRepository.getInstance(getActivity());
+        mRepository = CrimeRepository.getInstance(getActivity());
 
         if (savedInstanceState != null)
             mIsSubtitleVisible = savedInstanceState.getBoolean(BUNDLE_IS_SUBTITLE_VISIBLE, false);
+
+        mRepository.getCrimesLiveData().observe(this, crimes -> updateUI(crimes));
     }
 
     @Override
@@ -94,7 +97,6 @@ public class CrimeListFragment extends Fragment {
 
         //recyclerview responsibility: positioning
         mBinding.recyclerViewCrimes.setLayoutManager(new LinearLayoutManager(getActivity()));
-        updateUI();
 
         return mBinding.getRoot();
     }
@@ -104,7 +106,7 @@ public class CrimeListFragment extends Fragment {
         super.onResume();
 
         //performance issues
-        updateUI();
+//        updateUI();
     }
 
     @Override
@@ -144,8 +146,9 @@ public class CrimeListFragment extends Fragment {
         outState.putBoolean(BUNDLE_IS_SUBTITLE_VISIBLE, mIsSubtitleVisible);
     }
 
-    public void updateUI() {
-        List<Crime> crimes = mRepository.getList();
+    public void updateUI(List<Crime> crimes) {
+        if (crimes == null || crimes.size() == 0)
+            crimes = new ArrayList<>();
 
         if (mAdapter == null) {
             mAdapter = new CrimeAdapter(crimes);
@@ -160,16 +163,17 @@ public class CrimeListFragment extends Fragment {
 
     private void addCrime() {
         Crime crime = new Crime();
-        mRepository.insert(crime);
+        mRepository.insertCrime(crime);
 
         mCallBacks.onCrimeSelected(crime);
-        updateUI();
+//        updateUI();
     }
 
     private void updateSubtitle() {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
 
-        int numberOfCrimes = mRepository.getList().size();
+        List<Crime> crimes = mRepository.getCrimesLiveData().getValue();
+        int numberOfCrimes = crimes == null ? 0 : crimes.size();
         String crimesString = getString(R.string.subtitle_format, numberOfCrimes);
 
         if (!mIsSubtitleVisible)

@@ -10,16 +10,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.criminalintent.R;
 import com.example.criminalintent.controller.fragment.CrimeDetailFragment;
+import com.example.criminalintent.database.entities.Crime;
 import com.example.criminalintent.databinding.ActivityCrimePagerBinding;
-import com.example.criminalintent.model.Crime;
-import com.example.criminalintent.repository.CrimeDBRepository;
-import com.example.criminalintent.repository.IRepository;
+import com.example.criminalintent.repository.CrimeRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeDetail
 
     private ActivityCrimePagerBinding mBinding;
 
-    private IRepository mRepository;
+    private CrimeRepository mRepository;
 
     public static Intent newIntent(Context context, UUID crimeId) {
         Intent intent = new Intent(context, CrimePagerActivity.class);
@@ -43,15 +44,29 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeDetail
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_crime_pager);
 
-        mRepository = CrimeDBRepository.getInstance(this);
-        UUID crimeId = (UUID) getIntent().getSerializableExtra(EXTRA_CRIME_ID);
-        int position = mRepository.getPosition(crimeId);
+        mRepository = CrimeRepository.getInstance(this);
 
-        setUI(position);
+        LiveData<List<Crime>> crimesLiveData = mRepository.getCrimesLiveData();
+        crimesLiveData.observe(this, new Observer<List<Crime>>() {
+            @Override
+            public void onChanged(List<Crime> crimes) {
+                Log.d(TAG, "1111111111111111111111111111111111111111111111111111111111111");
+                crimesLiveData.removeObserver(this);
+
+                UUID crimeId = (UUID) getIntent().getSerializableExtra(EXTRA_CRIME_ID);
+                int position = mRepository.getPosition(crimeId);
+                setUI(crimes, position);
+
+            }
+        });
     }
 
-    private void setUI(int position) {
-        FragmentStateAdapter adapter = new CrimeViewPagerAdapter(this, mRepository.getList());
+    private void setUI(List<Crime> crimes, int position) {
+        if (crimes == null)
+            crimes = new ArrayList<>();
+
+        FragmentStateAdapter adapter =
+                new CrimeViewPagerAdapter(this, crimes);
         mBinding.crimeViewPager.setAdapter(adapter);
 
         //this method "must" be placed after setAdapter.

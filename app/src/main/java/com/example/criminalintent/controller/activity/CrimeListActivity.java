@@ -8,7 +8,9 @@ import androidx.fragment.app.Fragment;
 import com.example.criminalintent.R;
 import com.example.criminalintent.controller.fragment.CrimeDetailFragment;
 import com.example.criminalintent.controller.fragment.CrimeListFragment;
-import com.example.criminalintent.model.Crime;
+import com.example.criminalintent.database.entities.Crime;
+
+import java.util.ArrayList;
 
 public class CrimeListActivity extends SingleFragmentActivity
         implements CrimeListFragment.CallBacks, CrimeDetailFragment.Callbacks {
@@ -48,6 +50,6 @@ public class CrimeListActivity extends SingleFragmentActivity
         CrimeListFragment crimeListFragment = (CrimeListFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragment_container);
 
-        crimeListFragment.updateUI();
+        crimeListFragment.updateUI(new ArrayList<>());
     }
 }

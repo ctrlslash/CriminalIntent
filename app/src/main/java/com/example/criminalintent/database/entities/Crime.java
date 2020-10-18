@@ -1,19 +1,40 @@
-package com.example.criminalintent.model;
+package com.example.criminalintent.database.entities;
 
-import java.io.Serializable;
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 import java.util.Date;
 import java.util.UUID;
 
-public class Crime implements Serializable {
+@Entity(tableName = "crime")
+public class Crime {
 
+    @PrimaryKey
+    @NonNull
+    @ColumnInfo(name = "id")
     private UUID mId;
+
+    @ColumnInfo(name = "title")
     private String mTitle;
+
+    @ColumnInfo(name = "date")
     private Date mDate;
+
+    @ColumnInfo(name = "solved")
     private boolean mSolved;
+
+    @ColumnInfo(name = "suspect")
     private String mSuspect;
 
     public UUID getId() {
         return mId;
+    }
+
+    public void setId(UUID id) {
+        mId = id;
     }
 
     public String getTitle() {
@@ -48,25 +69,7 @@ public class Crime implements Serializable {
         mSuspect = suspect;
     }
 
-    /**
-     * if you don't have any uuid (that means you want to create new crime) call this
-     * constructor.
-     */
-    public Crime() {
-        this(UUID.randomUUID());
-//        mDate = DateUtils.getRandomDate(2000, 2020); //random date between 2000 to 2020
-    }
-
-    /**
-     * if you have a uuid for crime use this constructor. (that means you don't want to create
-     * a new crime).
-     * @param uuid
-     */
-    public Crime(UUID uuid) {
-        mId = uuid;
-        mDate = new Date(); //current date
-    }
-
+    @Ignore
     public Crime(UUID id, String title, Date date, boolean solved, String suspect) {
         mId = id;
         mTitle = title;
@@ -75,10 +78,9 @@ public class Crime implements Serializable {
         mSuspect = suspect;
     }
 
-    public Crime(String title, boolean solved) {
-        this();
-        this.mTitle = title;
-        this.mSolved = solved;
+    public Crime() {
+        mId = UUID.randomUUID();
+        mDate = new Date();
     }
 
     /**
@@ -87,16 +89,5 @@ public class Crime implements Serializable {
      */
     public String getPhotoFileName() {
         return "IMG_" + getId() + ".jpg";
-    }
-
-    @Override
-    public String toString() {
-        return "Crime{" +
-                "mId=" + mId +
-                ", mTitle='" + mTitle + '\'' +
-                ", mDate=" + mDate +
-                ", mSolved=" + mSolved +
-                ", mSuspect='" + mSuspect + '\'' +
-                '}';
     }
 }

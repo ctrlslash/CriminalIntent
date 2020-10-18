@@ -2,103 +2,82 @@ package com.example.criminalintent.repository;
 
 import android.content.Context;
 
-import com.example.criminalintent.model.Crime;
+import androidx.lifecycle.LiveData;
+
+import com.example.criminalintent.database.CrimeRoomDataBase;
+import com.example.criminalintent.database.dao.CrimeDAO;
+import com.example.criminalintent.database.entities.Crime;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class CrimeRepository implements IRepository<Crime> {
+public class CrimeRepository {
 
-    private static CrimeRepository sCrimeRepository;
-    private static final int NUMBER_OF_CRIMES = 5;
+    private static CrimeRepository sInstance;
 
-    private List<Crime> mCrimes;
+    private Context mContext;
+    private CrimeDAO mCrimeDAO;
 
-    public static CrimeRepository getInstance() {
-        if (sCrimeRepository == null)
-            sCrimeRepository = new CrimeRepository();
+    private LiveData<List<Crime>> mCrimesLiveData;
+    private LiveData<Crime> mCrimeLiveData;
 
-        return sCrimeRepository;
+    public static synchronized CrimeRepository getInstance(Context context) {
+        if (sInstance == null)
+            sInstance = new CrimeRepository(context);
+
+        return sInstance;
     }
 
-    private CrimeRepository() {
-        mCrimes = new ArrayList<>();
-        for (int i = 0; i < NUMBER_OF_CRIMES; i++) {
-            Crime crime = new Crime();
-            crime.setTitle("Crime#" + (i + 1));
-            crime.setSolved(i % 2 == 0);
+    private CrimeRepository(Context context) {
+        mContext = context;
 
-            mCrimes.add(crime);
-        }
+        CrimeRoomDataBase mCrimeRoomDataBase = CrimeRoomDataBase.getDataBase(mContext);
+        mCrimeDAO = mCrimeRoomDataBase.getCrimeDAO();
     }
 
-    public void setList(List<Crime> crimes) {
-        mCrimes = crimes;
+    public LiveData<List<Crime>> getCrimesLiveData() {
+        return mCrimeDAO.getCrimes();
     }
 
-    //Read all
-    @Override
-    public List<Crime> getList() {
-        return mCrimes;
+    public LiveData<Crime> getCrimeLiveData(UUID uuid) {
+        return mCrimeDAO.getCrime(uuid);
     }
 
-    //Read one
-    @Override
-    public Crime get(UUID uuid) {
-        for (Crime crime: mCrimes) {
-            if (crime.getId().equals(uuid))
-                return crime;
-        }
-
-        return null;
+    public void updateCrime(Crime crime) {
+        CrimeRoomDataBase.dataBaseWriteExecutor.execute(() -> mCrimeDAO.updateCrimes(crime));
     }
 
-    //Update one
-    @Override
-    public void update(Crime crime) {
-        Crime updateCrime = get(crime.getId());
-        updateCrime.setTitle(crime.getTitle());
-        updateCrime.setDate(crime.getDate());
-        updateCrime.setSolved(crime.isSolved());
+    public void deleteCrime(Crime crime) {
+        CrimeRoomDataBase.dataBaseWriteExecutor.execute(() -> mCrimeDAO.deleteCrimes(crime));
     }
 
-    //Delete
-    @Override
-    public void delete(Crime crime) {
-        for (int i = 0; i < mCrimes.size(); i++) {
-            if (mCrimes.get(i).getId().equals(crime.getId())) {
-                mCrimes.remove(i);
-                return;
+    public void insertCrime(Crime crime) {
+        CrimeRoomDataBase.dataBaseWriteExecutor.execute(() -> mCrimeDAO.insertCrimes(crime));
+    }
+
+    public void insertCrimes(List<Crime> list) {
+        CrimeRoomDataBase.dataBaseWriteExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mCrimeDAO.insertCrimes(list.toArray(new Crime[]{}));
             }
-        }
+        });
     }
 
-    //Create: Insert
-    @Override
-    public void insert(Crime crime) {
-        mCrimes.add(crime);
-    }
-
-    //Create: Insert
-    @Override
-    public void insertList(List<Crime> crimes) {
-        mCrimes.addAll(crimes);
-    }
-
-    @Override
     public int getPosition(UUID uuid) {
-        for (int i = 0; i < mCrimes.size(); i++) {
-            if (mCrimes.get(i).getId().equals(uuid))
-                return i;
-        }
-        return -1;
+        List<Crime> crimes = getCrimesLiveData().getValue();
+        Crime crime = getCrimeLiveData(uuid).getValue();
+
+        if (crimes == null || crime == null)
+            return 0;
+
+        return crimes.indexOf(crime);
     }
 
-    @Override
-    public File getPhotoFile(Context context, Crime crime) {
-        File photoFile = new File(context.getFilesDir(), crime.getPhotoFileName());
+    public File getPhotoFile(Crime crime) {
+        File photoFile = new File(mContext.getFilesDir(), crime.getPhotoFileName());
         return photoFile;
     }
+
 }

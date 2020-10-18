@@ -63,7 +63,6 @@ public class DatePickerFragment extends DialogFragment {
                 R.layout.dialog_fragment_date_picker,
                 null,
                 false);
-//        View view = inflater.inflate(R.layout.dialog_fragment_date_picker, null);
 
         initDatePicker();
 
