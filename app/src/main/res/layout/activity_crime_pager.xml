@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.viewpager2.widget.ViewPager2
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/crime_view_pager"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".controller.activity.CrimePagerActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-</androidx.viewpager2.widget.ViewPager2>
+    <data>
+    </data>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/crime_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".controller.activity.CrimePagerActivity">
+
+    </androidx.viewpager2.widget.ViewPager2>
+</layout>

@@ -2,6 +2,8 @@ package com.example.criminalintent.controller.activity;
 
 import androidx.annotation.LayoutRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -18,6 +20,8 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
     public static final String FRAGMENT_TAG = "FragmentActivity";
 
+    public ViewDataBinding mBinding;
+
     public abstract Fragment createFragment();
 
     @LayoutRes
@@ -26,7 +30,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getLayoutResId());
+        mBinding = DataBindingUtil.setContentView(this, getLayoutResId());
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 

@@ -7,6 +7,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -14,6 +15,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.criminalintent.R;
 import com.example.criminalintent.controller.fragment.CrimeDetailFragment;
+import com.example.criminalintent.databinding.ActivityCrimePagerBinding;
 import com.example.criminalintent.model.Crime;
 import com.example.criminalintent.repository.CrimeDBRepository;
 import com.example.criminalintent.repository.IRepository;
@@ -26,7 +28,8 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeDetail
     private static final String EXTRA_CRIME_ID = "com.example.criminalintent.CrimeId";
     public static final String TAG = "CPA";
 
-    private ViewPager2 mCrimeViewPager;
+    private ActivityCrimePagerBinding mBinding;
+
     private IRepository mRepository;
 
     public static Intent newIntent(Context context, UUID crimeId) {
@@ -38,26 +41,21 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeDetail
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_crime_pager);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_crime_pager);
 
         mRepository = CrimeDBRepository.getInstance(this);
         UUID crimeId = (UUID) getIntent().getSerializableExtra(EXTRA_CRIME_ID);
         int position = mRepository.getPosition(crimeId);
 
-        findViews();
         setUI(position);
-    }
-
-    private void findViews() {
-        mCrimeViewPager = findViewById(R.id.crime_view_pager);
     }
 
     private void setUI(int position) {
         FragmentStateAdapter adapter = new CrimeViewPagerAdapter(this, mRepository.getList());
-        mCrimeViewPager.setAdapter(adapter);
+        mBinding.crimeViewPager.setAdapter(adapter);
 
         //this method "must" be placed after setAdapter.
-        mCrimeViewPager.setCurrentItem(position);
+        mBinding.crimeViewPager.setCurrentItem(position);
     }
 
     @Override

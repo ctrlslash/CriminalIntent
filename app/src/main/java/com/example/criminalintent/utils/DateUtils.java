@@ -1,9 +1,7 @@
-package com.example.criminalintent.controller.utils;
+package com.example.criminalintent.utils;
 
-import java.time.Instant;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class DateUtils {
 

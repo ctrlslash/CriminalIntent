@@ -6,17 +6,16 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.DatePicker;
-
 import com.example.criminalintent.R;
+import com.example.criminalintent.databinding.DialogFragmentDatePickerBinding;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -31,9 +30,10 @@ public class DatePickerFragment extends DialogFragment {
 
     public static final String ARG_DATE = "currentDate";
     public static final String EXTRA_USER_SELECTED_DATE = "com.example.criminalintent.userSelectedDate";
-    private Date mCurrentDate;
 
-    private DatePicker mDatePicker;
+    private DialogFragmentDatePickerBinding mBinding;
+
+    private Date mCurrentDate;
 
     public DatePickerFragment() {
         // Required empty public constructor
@@ -58,15 +58,19 @@ public class DatePickerFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        View view = inflater.inflate(R.layout.dialog_fragment_date_picker, null);
+        mBinding = DataBindingUtil.inflate(
+                inflater,
+                R.layout.dialog_fragment_date_picker,
+                null,
+                false);
+//        View view = inflater.inflate(R.layout.dialog_fragment_date_picker, null);
 
-        findViews(view);
         initDatePicker();
 
         return new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.date_picker_title)
                 .setIcon(R.mipmap.ic_launcher)
-                .setView(view)
+                .setView(mBinding.getRoot())
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -78,10 +82,6 @@ public class DatePickerFragment extends DialogFragment {
                 .create();
     }
 
-    private void findViews(View view) {
-        mDatePicker = view.findViewById(R.id.date_picker_crime);
-    }
-
     private void initDatePicker() {
         //convert date to calendar
         Calendar calendar = Calendar.getInstance();
@@ -90,13 +90,13 @@ public class DatePickerFragment extends DialogFragment {
         int year = calendar.get(Calendar.YEAR);
         int monthOfYear = calendar.get(Calendar.MONTH);
         int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-        mDatePicker.init(year, monthOfYear, dayOfMonth, null);
+        mBinding.datePickerCrime.init(year, monthOfYear, dayOfMonth, null);
     }
 
     private Date getSelectedDateFromDatePicker() {
-        int year = mDatePicker.getYear();
-        int monthOfYear = mDatePicker.getMonth();
-        int dayOfMonth = mDatePicker.getDayOfMonth();
+        int year = mBinding.datePickerCrime.getYear();
+        int monthOfYear = mBinding.datePickerCrime.getMonth();
+        int dayOfMonth = mBinding.datePickerCrime.getDayOfMonth();
 
         GregorianCalendar gregorianCalendar = new GregorianCalendar(year, monthOfYear, dayOfMonth);
         return gregorianCalendar.getTime();

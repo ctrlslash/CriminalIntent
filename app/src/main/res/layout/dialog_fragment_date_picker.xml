@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<DatePicker xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/date_picker_crime"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_margin="16dp"
-    android:calendarViewShown="false"
-    tools:context=".controller.fragment.DatePickerFragment" />
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <DatePicker
+        android:id="@+id/date_picker_crime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:calendarViewShown="false"
+        tools:context=".controller.fragment.DatePickerFragment" />
+</layout>

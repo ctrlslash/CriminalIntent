@@ -1,7 +1,5 @@
 package com.example.criminalintent.model;
 
-import com.example.criminalintent.controller.utils.DateUtils;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
