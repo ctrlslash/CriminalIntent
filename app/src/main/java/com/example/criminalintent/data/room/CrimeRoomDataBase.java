@@ -1,4 +1,4 @@
-package com.example.criminalintent.database;
+package com.example.criminalintent.data.room;
 
 import android.content.Context;
 
@@ -7,9 +7,9 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
-import com.example.criminalintent.database.dao.CrimeDAO;
-import com.example.criminalintent.database.entities.Crime;
-import com.example.criminalintent.database.entities.RoomConverters;
+import com.example.criminalintent.data.room.dao.CrimeDAO;
+import com.example.criminalintent.data.room.entities.Crime;
+import com.example.criminalintent.data.room.entities.RoomConverters;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

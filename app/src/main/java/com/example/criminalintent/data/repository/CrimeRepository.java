@@ -1,12 +1,12 @@
-package com.example.criminalintent.repository;
+package com.example.criminalintent.data.repository;
 
 import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 
-import com.example.criminalintent.database.CrimeRoomDataBase;
-import com.example.criminalintent.database.dao.CrimeDAO;
-import com.example.criminalintent.database.entities.Crime;
+import com.example.criminalintent.data.room.CrimeRoomDataBase;
+import com.example.criminalintent.data.room.dao.CrimeDAO;
+import com.example.criminalintent.data.room.entities.Crime;
 
 import java.io.File;
 import java.util.List;

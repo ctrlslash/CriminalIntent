@@ -1,4 +1,4 @@
-package com.example.criminalintent.database.dao;
+package com.example.criminalintent.data.room.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -8,7 +8,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.criminalintent.database.entities.Crime;
+import com.example.criminalintent.data.room.entities.Crime;
 
 import java.util.List;
 import java.util.UUID;

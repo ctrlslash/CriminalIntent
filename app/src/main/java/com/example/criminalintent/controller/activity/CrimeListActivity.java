@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment;
 import com.example.criminalintent.R;
 import com.example.criminalintent.controller.fragment.CrimeDetailFragment;
 import com.example.criminalintent.controller.fragment.CrimeListFragment;
-import com.example.criminalintent.database.entities.Crime;
+import com.example.criminalintent.data.room.entities.Crime;
 
 import java.util.ArrayList;
 

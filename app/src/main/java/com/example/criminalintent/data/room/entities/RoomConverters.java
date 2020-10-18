@@ -1,4 +1,4 @@
-package com.example.criminalintent.database.entities;
+package com.example.criminalintent.data.room.entities;
 
 import androidx.room.TypeConverter;
 

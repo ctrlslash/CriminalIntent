@@ -27,10 +27,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import com.example.criminalintent.R;
-import com.example.criminalintent.database.entities.Crime;
+import com.example.criminalintent.data.repository.CrimeRepository;
+import com.example.criminalintent.data.room.entities.Crime;
 import com.example.criminalintent.databinding.FragmentCrimeDetailBinding;
-import com.example.criminalintent.repository.CrimeRepository;
-import com.example.criminalintent.utils.PictureUtils;
+import com.example.criminalintent.utilities.PictureUtils;
 
 import java.io.File;
 import java.text.SimpleDateFormat;

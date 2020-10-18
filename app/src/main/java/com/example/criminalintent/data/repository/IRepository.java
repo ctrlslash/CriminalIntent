@@ -1,6 +1,4 @@
-package com.example.criminalintent.repository;
-
-import android.content.Context;
+package com.example.criminalintent.data.repository;
 
 import androidx.lifecycle.LiveData;
 

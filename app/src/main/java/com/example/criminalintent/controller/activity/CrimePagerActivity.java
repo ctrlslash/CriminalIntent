@@ -16,9 +16,9 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.example.criminalintent.R;
 import com.example.criminalintent.controller.fragment.CrimeDetailFragment;
-import com.example.criminalintent.database.entities.Crime;
+import com.example.criminalintent.data.repository.CrimeRepository;
+import com.example.criminalintent.data.room.entities.Crime;
 import com.example.criminalintent.databinding.ActivityCrimePagerBinding;
-import com.example.criminalintent.repository.CrimeRepository;
 
 import java.util.ArrayList;
 import java.util.List;

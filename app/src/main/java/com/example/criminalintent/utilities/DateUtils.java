@@ -1,4 +1,4 @@
-package com.example.criminalintent.utils;
+package com.example.criminalintent.utilities;
 
 import java.util.Date;
 import java.util.GregorianCalendar;

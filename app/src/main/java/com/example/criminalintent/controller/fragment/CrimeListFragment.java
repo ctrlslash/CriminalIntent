@@ -14,15 +14,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.criminalintent.R;
-import com.example.criminalintent.database.entities.Crime;
+import com.example.criminalintent.data.repository.CrimeRepository;
+import com.example.criminalintent.data.room.entities.Crime;
 import com.example.criminalintent.databinding.FragmentCrimeListBinding;
 import com.example.criminalintent.databinding.ListRowCrimeBinding;
-import com.example.criminalintent.repository.CrimeRepository;
 
 import java.util.ArrayList;
 import java.util.List;
