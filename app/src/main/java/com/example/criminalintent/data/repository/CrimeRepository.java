@@ -19,9 +19,6 @@ public class CrimeRepository {
     private Context mContext;
     private CrimeDAO mCrimeDAO;
 
-    private LiveData<List<Crime>> mCrimesLiveData;
-    private LiveData<Crime> mCrimeLiveData;
-
     public static synchronized CrimeRepository getInstance(Context context) {
         if (sInstance == null)
             sInstance = new CrimeRepository(context);
@@ -63,16 +60,6 @@ public class CrimeRepository {
                 mCrimeDAO.insertCrimes(list.toArray(new Crime[]{}));
             }
         });
-    }
-
-    public int getPosition(UUID uuid) {
-        List<Crime> crimes = getCrimesLiveData().getValue();
-        Crime crime = getCrimeLiveData(uuid).getValue();
-
-        if (crimes == null || crime == null)
-            return 0;
-
-        return crimes.indexOf(crime);
     }
 
     public File getPhotoFile(Crime crime) {

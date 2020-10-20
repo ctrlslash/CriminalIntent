@@ -1,4 +1,4 @@
-package com.example.criminalintent.controller.activity;
+package com.example.criminalintent.view.activity;
 
 import android.os.Bundle;
 

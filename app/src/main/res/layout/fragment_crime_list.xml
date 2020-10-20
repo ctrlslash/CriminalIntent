@@ -10,7 +10,7 @@
         android:id="@+id/recycler_view_crimes"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".controller.fragment.CrimeListFragment">
+        tools:context=".view.fragment.CrimeListFragment">
 
     </androidx.recyclerview.widget.RecyclerView>
 </layout>
