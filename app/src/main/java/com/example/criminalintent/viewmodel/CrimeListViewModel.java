@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class CrimeViewModel extends AndroidViewModel {
+public class CrimeListViewModel extends AndroidViewModel {
 
     private CrimeRepository mRepository;
     private boolean mCrimeDetailSubtitleVisible = false;
@@ -62,7 +62,7 @@ public class CrimeViewModel extends AndroidViewModel {
         return mCrimeSelectedLiveData;
     }
 
-    public CrimeViewModel(@NonNull Application application) {
+    public CrimeListViewModel(@NonNull Application application) {
         super(application);
 
         mRepository = CrimeRepository.getInstance(application);
@@ -121,5 +121,10 @@ public class CrimeViewModel extends AndroidViewModel {
                     .replace(R.id.detail_fragment_container, fragment)
                     .commit();
         }
+    }
+
+    public void onClickListItem(int position) {
+        Crime crime = mCrimesLiveData.getValue().get(position);
+        onCrimeSelectedLiveData(crime);
     }
 }

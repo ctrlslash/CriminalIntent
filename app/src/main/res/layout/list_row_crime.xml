@@ -4,13 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View"/>
+        <variable
+            name="crimeListViewModel"
+            type="com.example.criminalintent.viewmodel.CrimeListViewModel" />
 
+        <variable
+            name="position"
+            type="Integer" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:padding="8dp"
+        android:onClick="@{() -> crimeListViewModel.onClickListItem(position)}">
 
         <ImageView
             android:id="@+id/imgview_solved"
@@ -23,6 +31,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:visibility="@{crimeListViewModel.crimesLiveData.get(position).solved ? View.VISIBLE : View.INVISIBLE}"
             android:src="@drawable/ic_solved" />
 
         <TextView
@@ -38,6 +47,7 @@
             app:layout_constraintEnd_toStartOf="@+id/imgview_solved"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:text="@{crimeListViewModel.crimesLiveData.get(position).title}"
             tools:text="Crime Title" />
 
         <TextView
@@ -55,6 +65,7 @@
             app:layout_constraintEnd_toStartOf="@+id/imgview_solved"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/list_row_crime_title"
+            android:text="@{crimeListViewModel.crimesLiveData.get(position).date.toString()}"
             tools:text="Crime Date" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

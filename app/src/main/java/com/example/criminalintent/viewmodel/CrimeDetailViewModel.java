@@ -10,17 +10,23 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.util.Log;
+import android.view.View;
+import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.criminalintent.R;
 import com.example.criminalintent.data.repository.CrimeRepository;
 import com.example.criminalintent.data.room.entities.Crime;
+import com.example.criminalintent.utilities.Constants;
 import com.example.criminalintent.utilities.PictureUtils;
+import com.example.criminalintent.view.fragment.CrimeDetailFragment;
 import com.example.criminalintent.view.fragment.DatePickerFragment;
 
 import java.io.File;
@@ -29,27 +35,29 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import static com.example.criminalintent.view.fragment.CrimeDetailFragment.DIALOG_FRAGMENT_TAG;
-import static com.example.criminalintent.view.fragment.CrimeDetailFragment.REQUEST_CODE_DATE_PICKER;
-import static com.example.criminalintent.view.fragment.CrimeDetailFragment.REQUEST_CODE_IMAGE_CAPTURE;
-import static com.example.criminalintent.view.fragment.CrimeDetailFragment.REQUEST_CODE_SELECT_CONTACT;
-
 public class CrimeDetailViewModel extends AndroidViewModel {
 
     public static final String FILE_PROVIDER_AUTHORITY = "com.example.criminalintent.fileprovider";
 
     private CrimeRepository mRepository;
-    private Crime mCrimeSubject;
     private File mPhotoFile;
 
+    //the result of live data fetch from room will be saved in this field.
+    private MutableLiveData<Crime> mCrimeSubjectLiveData = new MutableLiveData<>();
+
+    //this is live data object for room (only fetching).
     private LiveData<Crime> mCrimeLiveData;
 
-    public Crime getCrimeSubject() {
-        return mCrimeSubject;
+    public MutableLiveData<Crime> getCrimeSubject() {
+        return mCrimeSubjectLiveData;
+    }
+
+    public Crime getCrimeSubjectValue() {
+        return mCrimeSubjectLiveData.getValue();
     }
 
     public void setCrimeSubject(Crime crimeSubject) {
-        mCrimeSubject = crimeSubject;
+        mCrimeSubjectLiveData.setValue(crimeSubject);
         setPhotoFile(crimeSubject);
     }
 
@@ -76,11 +84,7 @@ public class CrimeDetailViewModel extends AndroidViewModel {
     }
 
     public void updateCrimeSubject() {
-        mRepository.updateCrime(mCrimeSubject);
-    }
-
-    public boolean resolveActivity(Intent intent) {
-        return intent.resolveActivity(getApplication().getPackageManager()) != null;
+        mRepository.updateCrime(getCrimeSubjectValue());
     }
 
     public Date getUserSelectedDateResult(Intent data) {
@@ -93,17 +97,33 @@ public class CrimeDetailViewModel extends AndroidViewModel {
                 activity);
     }
 
-    public void showDataPickerFragment(Fragment fragment) {
-        DatePickerFragment datePickerFragment =
-                DatePickerFragment.newInstance(mCrimeSubject.getDate());
+    public void onTextChangedCrimeTitle(CharSequence charSequence, int i, int i1, int i2) {
+        getCrimeSubjectValue().setTitle(charSequence.toString());
+        Log.d(Constants.APP_TAG, getCrimeSubjectValue().getTitle());
 
-        //create parent-child relations between CrimeDetailFragment-DatePickerFragment
-        datePickerFragment.setTargetFragment(fragment, REQUEST_CODE_DATE_PICKER);
-
-        datePickerFragment.show(fragment.getParentFragmentManager(), DIALOG_FRAGMENT_TAG);
+        updateCrimeSubject();
     }
 
-    public void shareReportWithApps(Fragment fragment) {
+    public void onCheckedChangedSolved(CompoundButton buttonView, boolean isChecked) {
+        getCrimeSubjectValue().setSolved(isChecked);
+        Log.d(Constants.APP_TAG, getCrimeSubject().toString());
+
+        updateCrimeSubject();
+    }
+
+    public void onClickCrimeDate(Fragment fragment) {
+        DatePickerFragment datePickerFragment =
+                DatePickerFragment.newInstance(getCrimeSubjectValue().getDate());
+
+        //create parent-child relations between CrimeDetailFragment-DatePickerFragment
+        datePickerFragment.setTargetFragment(fragment,
+                CrimeDetailFragment.REQUEST_CODE_DATE_PICKER);
+
+        datePickerFragment.show(fragment.getParentFragmentManager(),
+                CrimeDetailFragment.DIALOG_FRAGMENT_TAG);
+    }
+
+    public void onClickShareReport(Fragment fragment) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_TEXT, getReportText());
         intent.putExtra(Intent.EXTRA_SUBJECT,
@@ -115,15 +135,16 @@ public class CrimeDetailViewModel extends AndroidViewModel {
             fragment.startActivity(sendIntent);
     }
 
-    public void pickContactFromApps(Fragment fragment) {
+    public void onClickChooseSuspect(Fragment fragment) {
         Intent pickContactIntent = new Intent(Intent.ACTION_PICK);
         pickContactIntent.setType(ContactsContract.Contacts.CONTENT_TYPE);
 
         if (pickContactIntent.resolveActivity(getApplication().getPackageManager()) != null)
-            fragment.startActivityForResult(pickContactIntent, REQUEST_CODE_SELECT_CONTACT);
+            fragment.startActivityForResult(pickContactIntent,
+                    CrimeDetailFragment.REQUEST_CODE_SELECT_CONTACT);
     }
 
-    public void takePicture(Fragment fragment) {
+    public void onClickCaptureImage(Fragment fragment) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getApplication().getPackageManager()) != null) {
             if (getPhotoFile() == null)
@@ -137,7 +158,8 @@ public class CrimeDetailViewModel extends AndroidViewModel {
             grantTemPermissionForTakePicture(takePictureIntent, photoURI);
 
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-            fragment.startActivityForResult(takePictureIntent, REQUEST_CODE_IMAGE_CAPTURE);
+            fragment.startActivityForResult(takePictureIntent,
+                    CrimeDetailFragment.REQUEST_CODE_IMAGE_CAPTURE);
         }
     }
 
@@ -178,8 +200,9 @@ public class CrimeDetailViewModel extends AndroidViewModel {
         try {
             cursor.moveToFirst();
 
-            result = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-            mCrimeSubject.setSuspect(result);
+            result = cursor.getString(
+                    cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+            getCrimeSubjectValue().setSuspect(result);
             updateCrimeSubject();
         } finally {
             cursor.close();
@@ -189,19 +212,19 @@ public class CrimeDetailViewModel extends AndroidViewModel {
 
     private String getReportText() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        String dateString = simpleDateFormat.format(mCrimeSubject.getDate());
+        String dateString = simpleDateFormat.format(getCrimeSubjectValue().getDate());
 
-        String solvedString = mCrimeSubject.isSolved() ?
+        String solvedString = getCrimeSubjectValue().isSolved() ?
                 getApplication().getString(R.string.crime_report_solved) :
                 getApplication().getString(R.string.crime_report_unsolved);
 
-        String suspectString = mCrimeSubject.getSuspect() == null ?
+        String suspectString = getCrimeSubjectValue().getSuspect() == null ?
                 getApplication().getString(R.string.crime_report_no_suspect) :
                 getApplication().getString(R.string.crime_report_suspect,
-                        mCrimeSubject.getSuspect());
+                        getCrimeSubjectValue().getSuspect());
 
         String report = getApplication().getString(R.string.crime_report,
-                mCrimeSubject.getTitle(),
+                getCrimeSubjectValue().getTitle(),
                 dateString,
                 solvedString,
                 suspectString);

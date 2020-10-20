@@ -13,11 +13,11 @@ import com.example.criminalintent.R;
 import com.example.criminalintent.data.room.entities.Crime;
 import com.example.criminalintent.utilities.Constants;
 import com.example.criminalintent.view.fragment.CrimeListFragment;
-import com.example.criminalintent.viewmodel.CrimeViewModel;
+import com.example.criminalintent.viewmodel.CrimeListViewModel;
 
 public class CrimeListActivity extends SingleFragmentActivity {
 
-    private CrimeViewModel mCrimeViewModel;
+    private CrimeListViewModel mCrimeListViewModel;
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, CrimeListActivity.class);
@@ -28,13 +28,13 @@ public class CrimeListActivity extends SingleFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mCrimeViewModel = new ViewModelProvider(this).get(CrimeViewModel.class);
-        mCrimeViewModel.getCrimeSelectedLiveData().observe(this, new Observer<Crime>() {
+        mCrimeListViewModel = new ViewModelProvider(this).get(CrimeListViewModel.class);
+        mCrimeListViewModel.getCrimeSelectedLiveData().observe(this, new Observer<Crime>() {
             @Override
             public void onChanged(Crime crime) {
                 Log.d(Constants.APP_TAG, "onChanged: CrimeListActivity");
 
-                mCrimeViewModel.navigateToDetail(
+                mCrimeListViewModel.navigateToDetail(
                         CrimeListActivity.this,
                         crime,
                         isMasterDetail());

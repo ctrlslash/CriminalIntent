@@ -22,10 +22,8 @@ import com.example.criminalintent.adapters.CrimeAdapter;
 import com.example.criminalintent.data.room.entities.Crime;
 import com.example.criminalintent.databinding.FragmentCrimeListBinding;
 import com.example.criminalintent.utilities.Constants;
-import com.example.criminalintent.viewmodel.CrimeDetailViewModel;
-import com.example.criminalintent.viewmodel.CrimeViewModel;
+import com.example.criminalintent.viewmodel.CrimeListViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CrimeListFragment extends Fragment {
@@ -36,7 +34,7 @@ public class CrimeListFragment extends Fragment {
     private CrimeAdapter mAdapter;
 
     //shared view model between: this, CrimeListActivity, CrimeAdapter
-    private CrimeViewModel mCrimeViewModel;
+    private CrimeListViewModel mCrimeListViewModel;
 
     public CrimeListFragment() {
         // Required empty public constructor
@@ -56,13 +54,13 @@ public class CrimeListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        mCrimeViewModel = new ViewModelProvider(requireActivity()).get(CrimeViewModel.class);
-        mCrimeViewModel.getCrimesLiveData().observe(this, new Observer<List<Crime>>() {
+        mCrimeListViewModel = new ViewModelProvider(requireActivity()).get(CrimeListViewModel.class);
+        mCrimeListViewModel.getCrimesLiveData().observe(this, new Observer<List<Crime>>() {
             @Override
             public void onChanged(List<Crime> crimes) {
                 Log.d(Constants.APP_TAG, "OnChanged: CrimeListFragment");
 
-                mCrimeViewModel.setCrimesSubject(crimes);
+                mCrimeListViewModel.setCrimesSubject(crimes);
                 updateUI();
             }
         });
@@ -97,7 +95,7 @@ public class CrimeListFragment extends Fragment {
                 addCrime();
                 return true;
             case R.id.menu_item_subtitle:
-                mCrimeViewModel.toggleCrimeDetailSubtitleVisibility();
+                mCrimeListViewModel.toggleCrimeDetailSubtitleVisibility();
                 updateSubtitle();
                 getActivity().invalidateOptionsMenu();
                 return true;
@@ -106,12 +104,12 @@ public class CrimeListFragment extends Fragment {
         }
     }
     private void addCrime() {
-        mCrimeViewModel.insertNewCrime();
+        mCrimeListViewModel.insertNewCrime();
     }
 
     public void updateUI() {
         if (mAdapter == null) {
-            mAdapter = new CrimeAdapter(mCrimeViewModel);
+            mAdapter = new CrimeAdapter(this, mCrimeListViewModel);
             mBinding.recyclerViewCrimes.setAdapter(mAdapter);
         } else {
             mAdapter.notifyDataSetChanged();
@@ -123,15 +121,15 @@ public class CrimeListFragment extends Fragment {
     private void updateSubtitle() {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
 
-        String subtitle = mCrimeViewModel.isCrimeDetailSubtitleVisible() ?
-                getString(R.string.subtitle_format, mCrimeViewModel.getNumberOfCrimes()) :
+        String subtitle = mCrimeListViewModel.isCrimeDetailSubtitleVisible() ?
+                getString(R.string.subtitle_format, mCrimeListViewModel.getNumberOfCrimes()) :
                 null;
 
         activity.getSupportActionBar().setSubtitle(subtitle);
     }
 
     private void updateMenuItemSubtitle(@NonNull MenuItem item) {
-        item.setTitle(mCrimeViewModel.isCrimeDetailSubtitleVisible() ?
+        item.setTitle(mCrimeListViewModel.isCrimeDetailSubtitleVisible() ?
                 R.string.hide_subtitle :
                 R.string.show_subtitle);
     }

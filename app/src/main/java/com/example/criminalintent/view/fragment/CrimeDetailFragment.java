@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
@@ -61,28 +62,19 @@ public class CrimeDetailFragment extends Fragment {
         Log.d(TAG, "onCreate");
 
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
-        /*
-        This is only for education:
-            Note: using crimeId as unique key to separate view model foreach fragment inside
-            viewpager. if we don't use key then only one view model will be share between all
-            fragments that will cause lots of mistakes and unpredictable actions.
-            (for instance when one model update in one fragment all observers in
-            other fragment will get called).
-        */
-        mCrimeDetailViewModel = new ViewModelProvider(requireActivity())
-                .get(crimeId.toString(), CrimeDetailViewModel.class);
+        mCrimeDetailViewModel = new ViewModelProvider(this).get(CrimeDetailViewModel.class);
 
         mCrimeDetailViewModel.fetchCrimeFromDbToLiveData(crimeId);
-
         LiveData<Crime> crimeLiveData = mCrimeDetailViewModel.getCrimeLiveData();
-        crimeLiveData.observe(this, new SingleEventObserver<Crime>(this, crimeLiveData){
+        crimeLiveData.observe(this,
+                new SingleEventObserver<Crime>(this, crimeLiveData){
             @Override
             public void onChanged(Crime crime) {
                 super.onChanged(crime);
                 Log.d(Constants.APP_TAG, "onChanged: CrimeDetailFragment");
 
                 mCrimeDetailViewModel.setCrimeSubject(crime);
-                initViews();
+                updatePhotoView();
             }
         });
     }
@@ -99,63 +91,12 @@ public class CrimeDetailFragment extends Fragment {
                 container,
                 false);
 
-        setListeners();
+        mBinding.setCrimeDetailViewModel(mCrimeDetailViewModel);
+        mBinding.setCrimeDetailFragment(this);
+        mBinding.setLifecycleOwner(this);
+        Log.d(Constants.APP_TAG, "setVariable");
 
         return mBinding.getRoot();
-    }
-
-    private void initViews() {
-        mBinding.crimeTitle.setText(mCrimeDetailViewModel.getCrimeSubject().getTitle());
-        mBinding.crimeSolved.setChecked(mCrimeDetailViewModel.getCrimeSubject().isSolved());
-        mBinding.crimeDate.setText(mCrimeDetailViewModel.getCrimeSubject().getDate().toString());
-
-        if (mCrimeDetailViewModel.getCrimeSubject().getSuspect() != null)
-            mBinding.chooseSuspect.setText(mCrimeDetailViewModel.getCrimeSubject().getSuspect());
-
-        updatePhotoView();
-    }
-
-    private void setListeners() {
-        mBinding.crimeTitle.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                mCrimeDetailViewModel.getCrimeSubject().setTitle(charSequence.toString());
-                Log.d("CPA", mCrimeDetailViewModel.getCrimeSubject().getTitle());
-
-                updateCrimeSubject();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-        mBinding.crimeSolved.setOnCheckedChangeListener((compoundButton, checked) -> {
-            mCrimeDetailViewModel.getCrimeSubject().setSolved(checked);
-            Log.d(TAG, mCrimeDetailViewModel.getCrimeSubject().toString());
-
-            updateCrimeSubject();
-        });
-        mBinding.crimeDate.setOnClickListener(view -> {
-            mCrimeDetailViewModel.showDataPickerFragment(CrimeDetailFragment.this);
-        });
-
-        mBinding.shareReport.setOnClickListener(v -> {
-            mCrimeDetailViewModel.shareReportWithApps(CrimeDetailFragment.this);
-        });
-
-        mBinding.chooseSuspect.setOnClickListener(v -> {
-            mCrimeDetailViewModel.pickContactFromApps(CrimeDetailFragment.this);
-        });
-
-        mBinding.captureImage.setOnClickListener(v -> {
-            mCrimeDetailViewModel.takePicture(CrimeDetailFragment.this);
-        });
     }
 
     private void updateCrimeSubject() {
@@ -172,7 +113,7 @@ public class CrimeDetailFragment extends Fragment {
             Date userSelectedDate =
                     mCrimeDetailViewModel.getUserSelectedDateResult(data);
 
-            mCrimeDetailViewModel.getCrimeSubject().setDate(userSelectedDate);
+            mCrimeDetailViewModel.getCrimeSubjectValue().setDate(userSelectedDate);
             mBinding.crimeDate.setText(userSelectedDate.toString());
             updateCrimeSubject();
         } else if (requestCode == REQUEST_CODE_SELECT_CONTACT) {
