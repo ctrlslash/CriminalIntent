@@ -17,8 +17,8 @@ import com.example.criminalintent.viewmodel.CrimeListViewModel;
 public class CrimeAdapter extends RecyclerView.Adapter<CrimeAdapter.CrimeHolder> {
 
     private static final String TAG = "CrimeAdapter";
-    private CrimeListViewModel mCrimeListViewModel;
-    private LifecycleOwner mOwner;
+    private final CrimeListViewModel mCrimeListViewModel;
+    private final LifecycleOwner mOwner;
 
     public CrimeAdapter(LifecycleOwner owner, CrimeListViewModel crimeListViewModel) {
         mOwner = owner;
@@ -55,7 +55,7 @@ public class CrimeAdapter extends RecyclerView.Adapter<CrimeAdapter.CrimeHolder>
 
     class CrimeHolder extends RecyclerView.ViewHolder {
 
-        private ListRowCrimeBinding mListRowCrimeBinding;
+        private final ListRowCrimeBinding mListRowCrimeBinding;
 
         public CrimeHolder(ListRowCrimeBinding listRowCrimeBinding) {
             super(listRowCrimeBinding.getRoot());
