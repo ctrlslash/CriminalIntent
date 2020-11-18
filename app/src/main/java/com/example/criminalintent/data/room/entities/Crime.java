@@ -1,12 +1,16 @@
 package com.example.criminalintent.data.room.entities;
 
+import android.os.Build;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity(tableName = "crime")
@@ -89,5 +93,24 @@ public class Crime {
      */
     public String getPhotoFileName() {
         return "IMG_" + getId() + ".jpg";
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Crime crime = (Crime) o;
+        return mSolved == crime.mSolved &&
+                mId.equals(crime.mId) &&
+                Objects.equals(mTitle, crime.mTitle) &&
+                Objects.equals(mDate, crime.mDate) &&
+                Objects.equals(mSuspect, crime.mSuspect);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Override
+    public int hashCode() {
+        return Objects.hash(mId, mTitle, mDate, mSolved, mSuspect);
     }
 }
